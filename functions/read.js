@@ -1,22 +1,11 @@
 require('dotenv').config();
-const mongoose = require("mongoose");
-const UserData = require("../models/userdata");
+const { createClient } = require('@supabase/supabase-js');
+
+// Initialize Supabase client
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 exports.handler = async (event, context) => {
     try {
-        const mongoUri = process.env.MONGODB_URI;
-        console.log("Connecting to MongoDB...");
-        try {
-            await mongoose.connect(mongoUri);
-            console.log("Connected to MongoDB.");
-        } catch (error) {
-            console.error("Error connecting to MongoDB:", error);
-            return {
-                statusCode: 500,
-                body: JSON.stringify({ error: "Failed to connect to MongoDB" }),
-            };
-        }
-
         const teamkey = event.queryStringParameters && event.queryStringParameters.teamkey;
         console.log("Received teamkey:", teamkey);
 
@@ -28,8 +17,21 @@ exports.handler = async (event, context) => {
         }
 
         console.log("Executing query with teamkey:", teamkey);
-        const data = await UserData.findOne({ Team_password: teamkey});
-        console.log("Query result:", data);
+        
+        // Query Supabase to find the team with the given teamkey
+        const { data, error } = await supabase
+            .from('userdata')  // Replace 'userdata' with your actual table name
+            .select('*')
+            .eq('Team_password', teamkey)  // Adjust the column name if needed
+            .single();
+
+        if (error) {
+            console.error("Error querying Supabase:", error);
+            return {
+                statusCode: 500,
+                body: JSON.stringify({ error: "Failed to query Supabase" }),
+            };
+        }
 
         if (!data) {
             return {

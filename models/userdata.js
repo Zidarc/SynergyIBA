@@ -35,7 +35,7 @@ const usersdata = new mongoose.Schema({
             message: props => `${props.path} array length should match the number of coins`
         }
     },
-    stock_previous: {
+    stock_percantagechange: {
         type: [Number],
         required: true,
         validate: {
@@ -45,7 +45,7 @@ const usersdata = new mongoose.Schema({
             message: props => `${props.path} array length should match the number of coins`
         }
     }
-}, { collection: 'UserData' }); // Explicitly set the collection name
+}, { collection: 'UserData' }); 
 
 const UserData = mongoose.model("UserData", usersdata);
 module.exports = UserData;
