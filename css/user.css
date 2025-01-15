@@ -1,0 +1,282 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #22262b;
+    background-size: contain;
+    background-position: center;
+    color: wheat;
+    font-family: 'Montserrat', sans-serif;
+    display: flex;
+    flex-direction: row;   
+    height: 100vh;
+  }
+  @media (max-width: 768px) {
+    .sidepanel{
+        width: 100% !important;
+        border-right:none !important;
+        padding-bottom: 2vh;
+        border-bottom: 2px solid black ;
+        margin-top: -10vh;
+        padding-top: 5vh;
+        height:auto !important;
+    }
+    body {
+        display: block;
+        margin: 0 !important;
+    }
+    .user_panel{
+        padding-bottom: 5vh;
+        margin-left: 0 !important;
+
+    }
+    .Master_Table{
+        margin-top: 10vh !important;
+    }
+    .logos{
+        display: flex !important;
+        border-radius: 50;
+    }
+    .cedar{
+        margin-right:2vh;
+    }
+    .ccx{
+        margin-right:2vh;
+    }
+    }
+@media (max-height: 500px){
+    .sidepanel{
+        width: 100% !important;
+        border-right:none !important;
+        padding-bottom: 2vh;
+        border-bottom: 2px solid black ;
+        margin-top: -10vh;
+        padding-top: 5vh;
+        height:auto !important;
+    }
+    body {
+        display: block;
+        margin: 0 !important;
+    }
+    .user_panel{
+        padding-bottom: 5vh;
+        margin-left: 0 !important;
+
+    }
+    .Master_Table{
+        margin-top: 10vh !important;
+    }
+    .logos{
+        display: flex !important;
+        border-radius: 50;
+    }
+    .cedar{
+        margin-right:2vh;
+    }
+    .ccx{
+        margin-right:2vh;
+    }
+    }
+
+
+
+#stick-layer {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    backdrop-filter: blur(10px);
+    padding: 10px;
+    z-index: 1000; /* Set a high z-index to ensure it's above other elements */
+}
+
+  
+#information {
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    animation: scrollText 12s linear infinite;
+    width: max-content;
+}
+
+@keyframes scrollText {
+    0% { transform: translateX(100%); color: white; }
+    100% { transform: translateX(-100%); color: white; }
+}
+#attention {
+    color: red;
+}
+
+.Balance {
+    text-align: center;
+    color: gold;
+    font-weight: bold;
+    margin-top: 2vh;
+}
+.Update_Word {
+    margin-right: 10px;
+}
+
+.user_panel {
+    flex-grow: 1;
+}
+.Balance #TotalWorth {
+    color: white;   
+    font-size: 1.65em !important;
+    display: inline-block;
+}
+.Balance pre {
+    margin-bottom: 1vh;
+}
+.sidepanel{
+    width: 40%;
+    height:100%;
+    background-color: #1e2329;
+    border-right: 2px solid black;
+    flex: 0 0 auto;
+    top: 0;
+    left: 0;
+}
+.Master_Table {
+    margin-top: 18.3vh;
+}
+table {
+    margin-top: 50px;
+    flex-grow: 1;
+    width: 80%;
+    border-collapse: collapse;
+    margin-right: auto;
+    margin-left: auto;
+    background-color:transparent;
+    backdrop-filter: blur(2px); 
+    text-align: center;
+    font-size: medium;
+
+
+  }
+  
+  td {
+    padding: 5px;
+    width: fit-content;
+    border-bottom: 1px solid black;
+  }
+  
+  tr:nth-child(even) {
+    backdrop-filter: blur(2px);
+    background-color: transparent;
+    width: fit-content;
+  }
+  
+  tr:nth-child(odd) {
+    backdrop-filter: blur(2px);
+    background-color: transparent;
+    width: fit-content;
+  }
+  
+  #status {
+    font-weight: bold;
+    color: #FFD700; /* Gold color for the status */
+  }
+
+
+.updateline {
+    text-align: center;
+    color: white;
+    font-size: medium;
+    margin-bottom: 5vh;
+    margin-top: 5vh;
+}
+
+.updateline p,
+.updateline label,
+.updateline select,
+.updateline button {
+    display: inline-block;
+    margin: 5px;
+    font-size: large;
+    color: white;
+    font-weight: bolder;
+}
+
+.updateline select,
+.updateline button {
+    vertical-align: middle;
+}
+
+.updateline label {
+    color: wheat;
+}
+
+.updateline input[type="number"],
+.updateline select {
+
+    padding: 8px;
+    box-sizing: border-box;
+    border-radius: 4px;
+    background-color: #333;
+    color: white;
+    text-align: center;
+    border: none;
+    font-size: medium;
+}
+
+.updateline button {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.updateline button:hover {
+    background-color: #45a049;
+}
+
+
+.material-symbols-outlined {
+  font-variation-settings:
+  'FILL' 0,
+  'wght' 400,
+  'GRAD' 0,
+  'opsz' 24;
+  color: red;
+}
+
+.trending-green {
+    color:green !important;
+}
+.trending-red {
+    color:red !important;
+}
+.trend-black {
+    color:black !important;
+}
+.logos {
+    display: block;
+    background-color: #1e2329;
+    margin-right: 0;
+    padding-right: 0;
+
+}
+
+.ccx-logo {
+    border-radius: 50% !important;
+    margin-bottom: 2vh;
+}
+.coin-logos {
+    width: fit-content;
+}
+.ccx{
+    border-radius: 50%; 
+}
+.cedar{
+    margin-bottom: 2vh;
+}
+.negotium {
+    margin-right:0vh;   
+    width:0vh !important;
+    height:0vh !important;
+    margin-bottom: 0vh;
+    
+}

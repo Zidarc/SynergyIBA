@@ -20,9 +20,9 @@ exports.handler = async (event, context) => {
         
         // Query Supabase to find the team with the given teamkey
         const { data, error } = await supabase
-            .from('userdata')  // Replace 'userdata' with your actual table name
+            .from('userdata')
             .select('*')
-            .eq('Team_password', teamkey)  // Adjust the column name if needed
+            .eq('Team_password', teamkey)
             .single();
 
         if (error) {
