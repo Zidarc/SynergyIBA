@@ -6,11 +6,16 @@ exports.handler = async (event, context) => {
     try {
         const mongoUri = process.env.MONGODB_URI;
         console.log("Connecting to MongoDB...");
-        await mongoose.connect(mongoUri, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
-        console.log("Connected to MongoDB.");
+        try {
+            await mongoose.connect(mongoUri);
+            console.log("Connected to MongoDB.");
+        } catch (error) {
+            console.error("Error connecting to MongoDB:", error);
+            return {
+                statusCode: 500,
+                body: JSON.stringify({ error: "Failed to connect to MongoDB" }),
+            };
+        }
 
         const teamkey = event.queryStringParameters && event.queryStringParameters.teamkey;
         console.log("Received teamkey:", teamkey);
@@ -22,7 +27,8 @@ exports.handler = async (event, context) => {
             };
         }
 
-        const data = await UserData.findOne({ Team_password: teamkey });
+        console.log("Executing query with teamkey:", teamkey);
+        const data = await UserData.findOne({ Team_password: teamkey});
         console.log("Query result:", data);
 
         if (!data) {
