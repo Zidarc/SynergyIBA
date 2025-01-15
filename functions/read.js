@@ -21,7 +21,7 @@ exports.handler = async (event, context) => {
         if (!data) {
             return {
                 statusCode: 404,
-                body: JSON.stringify({ error: `Team '${teamkey}' not found` }),
+                body: JSON.stringify({ error: `Team '${teamkey}' not found '${data}'` }),
             };
         }
 
