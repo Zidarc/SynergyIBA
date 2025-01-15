@@ -22,7 +22,7 @@ exports.handler = async (event, context) => {
             };
         }
 
-        const data = await UserData.findOne({ Team_password: new RegExp(`^${teamkey}$`, 'i') });
+        const data = await UserData.findOne({ Team_password: teamkey });
         console.log("Query result:", data);
 
         if (!data) {
