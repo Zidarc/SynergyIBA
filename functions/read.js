@@ -1,12 +1,19 @@
+require('dotenv').config();
 const mongoose = require("mongoose");
 const UserData = require("../models/userdata");
-require('dotenv').config();
 
 exports.handler = async (event, context) => {
     try {
-        mongoose.connect("mongodb+srv://Admin:F9RTnf6akOCLYmqe@cluster0.rslaw.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0");
-        // Extract team key from the query parameters
+        const mongoUri = process.env.MONGODB_URI;
+        console.log("Connecting to MongoDB...");
+        await mongoose.connect(mongoUri, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        console.log("Connected to MongoDB.");
+
         const teamkey = event.queryStringParameters && event.queryStringParameters.teamkey;
+        console.log("Received teamkey:", teamkey);
 
         if (!teamkey) {
             return {
@@ -15,13 +22,13 @@ exports.handler = async (event, context) => {
             };
         }
 
-        // Find data for the specified team
-        const data = await UserData.findOne({ Team_password: teamkey });
+        const data = await UserData.findOne({ Team_password: new RegExp(`^${teamkey}$`, 'i') });
+        console.log("Query result:", data);
 
         if (!data) {
             return {
                 statusCode: 404,
-                body: JSON.stringify({ error: `Team '${teamkey}' not found '${data}'` }),
+                body: JSON.stringify({ error: `Team '${teamkey}' not found` }),
             };
         }
 
@@ -30,9 +37,10 @@ exports.handler = async (event, context) => {
             body: JSON.stringify(data),
         };
     } catch (error) {
+        console.error("Error details:", error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: "Internal Server Error" }),
+            body: JSON.stringify({ error: "Internal Server Error", details: error.message }),
         };
     }
 };

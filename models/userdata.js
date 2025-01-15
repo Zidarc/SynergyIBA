@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const coinNames = ['Bitcoin', 'Polkadot', 'Luna', 'Dogecoin', 'XRP', 'BNB','Ethereum'];
+const coinNames = ['Bitcoin', 'Polkadot', 'Luna', 'Dogecoin', 'XRP', 'BNB', 'Ethereum'];
 
 const usersdata = new mongoose.Schema({
     Team_name: {
@@ -16,12 +16,12 @@ const usersdata = new mongoose.Schema({
         unique: true
     },
     free_money: {
-        type:Number,
+        type: Number,
         required: true,
         trim: true
     },
     total_worth: {
-        type:Number,
+        type: Number,
         required: true,
         trim: true
     },
@@ -30,23 +30,22 @@ const usersdata = new mongoose.Schema({
         required: true,
         validate: {
             validator: function (v) {
-                // Ensure the length of the array matches the number of coins
                 return v.length === coinNames.length;
             },
-            message: props => `${props.path} array length should match the number of coins`,
+            message: props => `${props.path} array length should match the number of coins`
         }
     },
     stock_previous: {
         type: [Number],
         required: true,
-        validate:{
+        validate: {
             validator: function (v) {
-                return v.lenght === coinNames.lenght;
+                return v.length === coinNames.length;
             },
-            message: props => `$props{prop.path} array should match the number of coins`,
+            message: props => `${props.path} array length should match the number of coins`
         }
     }
-});
+}, { collection: 'UserData' }); // Explicitly set the collection name
 
-const UserData = mongoose.model("userdata", usersdata);
+const UserData = mongoose.model("UserData", usersdata);
 module.exports = UserData;
