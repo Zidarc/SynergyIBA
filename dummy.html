@@ -4,21 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dummy Page</title>
-    <script>
-        import { getTeamkey } from "./teamdata.js";
-        const Upassword = getTeamkey();
-        async function fetchData() {
-            try {
-                const response = await fetch(`/.netlify/functions/read?teamkey=${Upassword}`);
-                const data = await response.json();
-                document.getElementById('data').innerText = JSON.stringify(data, null, 2);
-            } catch (error) {
-                console.error('Error fetching data:', error);
-            }
-        }
-
-        window.onload = fetchData;
-    </script>
 </head>
 <body>
     <h1>Data from Serverless Function</h1>
