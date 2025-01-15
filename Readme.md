@@ -1,1 +1,1 @@
-# Synergy IBA Event Stock Market Module
+# Synergy IBA Event Stock Market Module# SynergyIBA
