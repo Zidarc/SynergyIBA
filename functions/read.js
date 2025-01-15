@@ -4,7 +4,7 @@ require('dotenv').config();
 
 exports.handler = async (event, context) => {
     try {
-        mongoose.connect(MONGODB_URI);
+        mongoose.connect(process.env.MONGODB_URI);
         // Extract team key from the query parameters
         const teamkey = event.queryStringParameters && event.queryStringParameters.teamkey;
 
