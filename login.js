@@ -18,7 +18,7 @@ async function signIn() {
         document.getElementById('errorbox').innerText = "Please enter the values in.";
     } else {
         try {
-            const response = await fetch(`https://synergy-iba.netlify.app/.netlify/functions/read`);
+            const response = await fetch(`/.netlify/functions/read?teamkey=${Upassword}`);
             if (!response.ok) {
                 throw new Error(`HTTP error! Status: ${response.status}`);
             }
