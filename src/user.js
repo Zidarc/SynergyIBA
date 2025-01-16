@@ -141,23 +141,54 @@ document.getElementById("readSelectedValue").addEventListener("click", async fun
     }
 });
 
-document.getElementById("liquidate").addEventListener("click", async function() {
+document.getElementById("liquidate").addEventListener("click", async function () {
     try {
+        // Retrieve the coin type and validate it
         let cointype = document.getElementById("CoinType").value;
-        const teamId = getTeamkey();
-        let index;
+        if (!cointype) {
+            console.error("Coin type is not selected or invalid.");
+            return;
+        }
+
         const coinTypes = ["OGDC", "PPL", "NBP", "MEBL", "HBL", "MCB", "FCCL", "LUCK", "EFERT", "ENGRO", "HUBC", "UNITY", "HASCOL", "SNGP", "PSO", "PAEL", "TRG", "ISL", "SEARL", "NML"];
-        index = coinTypes.indexOf(coinTypes);
-        coinamount = document.getElementById(cointype+"U").value;
-        // let coinamount = userCoins[index];
-        const response = await fetch(`/.netlify/functions/update?cointype=${cointype}&teamId=${teamId}&transactiontype=sell&coinval=${coinamount}`);
-        //const total = await fetch(`/.netlify/functions/totalworth?teamId=${teamId}`);
+        const index = coinTypes.indexOf(cointype);
+
+        if (index === -1) {
+            console.error("Invalid coin type selected.");
+            return;
+        }
+
+        // Retrieve the coin amount from the corresponding input field
+        let coinamount = document.getElementById(cointype + "U")?.value;
+        if (!coinamount || isNaN(coinamount)) {
+            console.error("Invalid coin amount entered.");
+            return;
+        }
+
+        // Get the team ID
+        const teamId = getTeamkey();
+        if (!teamId) {
+            console.error("Team ID not found.");
+            return;
+        }
+
+        // Make the API call to update the coin transaction
+        const response = await fetch(
+            `/.netlify/functions/update?cointype=${cointype}&teamId=${teamId}&transactiontype=sell&coinval=${coinamount}`
+        );
+
+        if (!response.ok) {
+            throw new Error(`API call failed with status: ${response.status}`);
+        }
+
+        // Optionally, call another function to handle further data updates
         await readdata();
+        console.log("Transaction successful.");
     } catch (error) {
-        //document.getElementById("statusN").innerText = " Error: " + error;
+        console.error("An error occurred:", error);
     }
-    
 });
+
 
 
 const updateInput = document.getElementById("update");
