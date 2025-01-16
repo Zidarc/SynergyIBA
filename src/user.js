@@ -89,8 +89,8 @@ async function readdata() {
         const data = await response.json();
         userCoins = data.Stock;
         freeCoins = data.free_money;
-        let sum = freeCoins + (masterCoin.reduce((acc, masterCoinVal, index) => acc + masterCoinVal * userCoins[index], 0));
-        sum =+sum.toFixed(3);
+        // let sum = freeCoins + (masterCoin.reduce((acc, masterCoinVal, index) => acc + masterCoinVal * userCoins[index], 0));
+        // sum =+sum.toFixed(3);
         if (data.error) {
             //document.getElementById("statusU").innerText = `Error: ${data.error}`;
         } else {
@@ -144,13 +144,13 @@ document.getElementById("readSelectedValue").addEventListener("click", async fun
 document.getElementById("liquidate").addEventListener("click", async function() {
     try {
         let cointype = document.getElementById("CoinType").value;
-        let transactiontype = 2
         const teamId = getTeamId();
         let index;
         const coinTypes = ["OGDC", "PPL", "NBP", "MEBL", "HBL", "MCB", "FCCL", "LUCK", "EFERT", "ENGRO", "HUBC", "UNITY", "HASCOL", "SNGP", "PSO", "PAEL", "TRG", "ISL", "SEARL", "NML"];
         index = coinTypes.indexOf(coinTypes);
+        coinamount = document.getElementById(cointype+"U").value;
         let coinamount = userCoins[index];
-        const response = await fetch(`/.netlify/functions/update?cointype=${cointype}&teamId=${teamId}&transactiontype=${transactiontype}&coinval=${coinamount}`);
+        const response = await fetch(`/.netlify/functions/update?cointype=${cointype}&teamId=${teamId}&transactiontype=sell&coinval=${coinamount}`);
         //const total = await fetch(`/.netlify/functions/totalworth?teamId=${teamId}`);
         await readdata();
     } catch (error) {
