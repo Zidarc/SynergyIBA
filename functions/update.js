@@ -37,7 +37,7 @@ exports.handler = async (event, context) => {
                 return stock * (1 + change / 100);
             });
 
-            const updatedMasterCoinsStockChange = MasterCoinsStockChange.map((change, index) => change);
+            const updatedMasterCoinsStockChange = MasterCoinsStockChange.map((change, index) => change+ MCStockChange[index]);
 
             const { error: updateError } = await supabase
                 .from('userdata')
