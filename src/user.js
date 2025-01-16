@@ -12,6 +12,12 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 document.addEventListener("DOMContentLoaded", async function() {
     await master();
 });
+
+// Utility function to round values to 4 decimal places
+function roundTo4Decimals(value) {
+    return Math.round(value * 10000) / 10000;
+}
+
 async function master() {
     try {
         const response = await fetch(`/.netlify/functions/read?teamkey=MasterCoins`);
@@ -21,44 +27,34 @@ async function master() {
         }
 
         const data = await response.json();
-        masterCoin = data.Stock;
-        if (data.error) {
-            //document.getElementById("status").innerText = `Error: ${data.error}`;
-        } else {
-            const coinId = ['OGDC', 'PPL', 'NBP', 'MEBL', 'HBL', 'MCB', 'FCCL', 'LUCK', 'EFERT', 'ENGRO', 'HUBC', 'UNITY', 'HASCOL', 'SNGP', 'PSO', 'PAEL', 'TRG', 'ISL', 'SEARL', 'NML'];
+        masterCoin = data.Stock.map(value => roundTo4Decimals(value));
 
+        if (!data.error) {
+            const coinId = ['OGDC', 'PPL', 'NBP', 'MEBL', 'HBL', 'MCB', 'FCCL', 'LUCK', 'EFERT', 'ENGRO', 'HUBC', 'UNITY', 'HASCOL', 'SNGP', 'PSO', 'PAEL', 'TRG', 'ISL', 'SEARL', 'NML'];
             coinId.forEach((coinId, index) => {
-                const htmlContent = `<pre>${data.Stock[index]}</pre>`;
+                const htmlContent = `<pre>${masterCoin[index]}</pre>`;
                 document.getElementById(coinId).innerHTML = htmlContent;
             });
-            //document.getElementById("status").innerText = "Data fetched successfully.";
-
 
             const pccoinIds = ['OGDCChange', 'PPLChange', 'NBPChange', 'MEBLChange', 'HBLChange', 'MCBChange', 'FCCLChange', 'LUCKChange', 'EFERTChange', 'ENGROChange', 'HUBCChange', 'UNITYChange', 'HASCOLChange', 'SNGPChange', 'PSOChange', 'PAELChange', 'TRGChange', 'ISLChange', 'SEARLChange', 'NMLChange'];
-
             pccoinIds.forEach((coinId1, index) => {
-                const htmlContent = `<pre>${data.StockChange[index]}</pre>`;
+                const htmlContent = `<pre>${roundTo4Decimals(data.StockChange[index])}</pre>`;
                 document.getElementById(coinId1).innerHTML = htmlContent;
             });
-            
-           // document.getElementById("status").innerText = "Data fetched successfully.";
 
-           const coinIds = ['OGDCTrend', 'PPLTrend', 'NBPTrend', 'MEBLTrend', 'HBLTrend', 'MCBTrend', 'FCCLTrend', 'LUCKTrend', 'EFERTTrend', 'ENGROTrend', 'HUBCTrend', 'UNITYTrend', 'HASCOLTrend', 'SNGPTrend', 'PSOTrend', 'PAELTrend', 'TRGTrend', 'ISLTrend', 'SEARLTrend', 'NMLTrend'];
-           coinIds.forEach((coinId2, index) => {
-               const trendClass = data.StockChange[index] > 0 ? "trending_up" :
-                                  data.StockChange[index] < 0 ? "trending_down" :
-                                  "unknown_med";
-               
-               document.getElementById(coinId2).innerText = trendClass;
-           });
+            const coinIds = ['OGDCTrend', 'PPLTrend', 'NBPTrend', 'MEBLTrend', 'HBLTrend', 'MCBTrend', 'FCCLTrend', 'LUCKTrend', 'EFERTTrend', 'ENGROTrend', 'HUBCTrend', 'UNITYTrend', 'HASCOLTrend', 'SNGPTrend', 'PSOTrend', 'PAELTrend', 'TRGTrend', 'ISLTrend', 'SEARLTrend', 'NMLTrend'];
+            coinIds.forEach((coinId2, index) => {
+                const trendClass = data.StockChange[index] > 0 ? "trending_up" :
+                                   data.StockChange[index] < 0 ? "trending_down" :
+                                   "unknown_med";
+                document.getElementById(coinId2).innerText = trendClass;
+            });
 
             coinIds.forEach((coinId) => {
                 const coinDiv = document.getElementById(coinId);
-        
                 const coinValue = coinDiv.textContent;
 
                 coinDiv.classList.remove("trending-green", "trending-red", "trend-black");
-        
                 if (coinValue === "trending_up") {
                     coinDiv.classList.add("trending-green");
                 } else if (coinValue === "trending_down") {
@@ -66,15 +62,14 @@ async function master() {
                 } else {
                     coinDiv.classList.add("trend-black");
                 }
-        });
-            
+            });
         }
     } catch (error) {
-        //document.getElementById("status").innerText = "Error: " + error;
-    }finally{
+        console.error("Error:", error);
+    } finally {
         await readdata();
     }
-};
+}
 
 async function readdata() {
     try {
@@ -86,36 +81,28 @@ async function readdata() {
         }
 
         const data = await response.json();
-        userCoins = data.Stock;
-        freeCoins = data.free_money;
+        userCoins = data.Stock.map(value => roundTo4Decimals(value));
+        freeCoins = roundTo4Decimals(data.free_money);
 
-        if (data.error) {
-            console.error(`Error: ${data.error}`);
-        } else {
+        if (!data.error) {
             const coinIdsU = ['OGDCU', 'PPLU', 'NBPU', 'MEBLU', 'HBLU', 'MCBU', 'FCCLU', 'LUCKU', 'EFERTU', 'ENGROU', 'HUBCU', 'UNITYU', 'HASCOLU', 'SNGPU', 'PSOU', 'PAELU', 'TRGU', 'ISLU', 'SEARLU', 'NMLU'];
-
-            // Update coin holdings for the user
             coinIdsU.forEach((coinId, index) => {
-                const htmlContent = `<pre>${data.Stock[index]}</pre>`;
+                const htmlContent = `<pre>${userCoins[index]}</pre>`;
                 document.getElementById(coinId).innerHTML = htmlContent;
             });
 
-            // Display free money
-            document.getElementById("FreeMoney").innerHTML = `<pre>${data.free_money}</pre>`;
+            document.getElementById("FreeMoney").innerHTML = `<pre>${freeCoins}</pre>`;
 
-            // Calculate total worth on the client side
-            const totalWorth = freeCoins + masterCoin.reduce((acc, masterCoinVal, index) => {
+            const totalWorth = roundTo4Decimals(freeCoins + masterCoin.reduce((acc, masterCoinVal, index) => {
                 return acc + masterCoinVal * userCoins[index];
-            }, 0);
+            }, 0));
 
-            // Round the total worth and update the UI
-            document.getElementById("TotalWorth").innerHTML = `<pre>${totalWorth.toFixed(3)}</pre>`;
+            document.getElementById("TotalWorth").innerHTML = `<pre>${totalWorth}</pre>`;
         }
     } catch (error) {
         console.error("Error:", error);
     }
 }
-
 supabaseClient
   .channel('userdata')
   .on('postgres_changes', 
@@ -132,101 +119,49 @@ supabaseClient
   )
   .subscribe();
 
-
-  document.getElementById("readSelectedValue").addEventListener("click", async function () {
+document.getElementById("readSelectedValue").addEventListener("click", async function () {
     try {
-        // Retrieve and validate input values
-        let cointype = document.getElementById("CoinType").value;
-        let transactiontype = document.getElementById("transactionType").value;
-        let coinval = document.getElementById("update").value;
+        const cointype = document.getElementById("CoinType").value;
+        const transactiontype = document.getElementById("transactionType").value;
+        const coinval = roundTo4Decimals(parseFloat(document.getElementById("update").value));
 
-        if (!cointype) {
-            console.error("Coin type is not selected or invalid.");
-            return;
+        if (cointype && transactiontype && coinval > 0) {
+            const teamId = getTeamkey();
+            const response = await fetch(
+                `/.netlify/functions/update?cointype=${cointype}&teamId=${teamId}&transactiontype=${transactiontype}&coinval=${coinval}`
+            );
+
+            if (response.ok) await readdata();
         }
-
-        if (!transactiontype) {
-            console.error("Transaction type is not selected or invalid.");
-            return;
-        }
-
-        if (!coinval || isNaN(coinval) || coinval <= 0) {
-            console.error("Invalid coin value entered. It must be greater than 0.");
-            return;
-        }
-
-        // Validate team ID
-        const teamId = getTeamkey();
-        if (!teamId) {
-            console.error("Team ID not found.");
-            return;
-        }
-
-        // Make the API call to update the coin transaction
-        const response = await fetch(
-            `/.netlify/functions/update?cointype=${cointype}&teamId=${teamId}&transactiontype=${transactiontype}&coinval=${coinval}`
-        );
-
-        if (!response.ok) {
-            throw new Error(`API call failed with status: ${response.status}`);
-        }
-
-        // Update data after successful transaction
-        await readdata();
-        console.log("Transaction successful.");
     } catch (error) {
-        console.error("An error occurred:", error);
+        console.error("Error:", error);
     }
 });
 
 document.getElementById("liquidate").addEventListener("click", async function () {
     try {
-        // Retrieve and validate the coin type
-        let cointype = document.getElementById("CoinType").value;
-        if (!cointype) {
-            console.error("Coin type is not selected or invalid.");
-            return;
-        }
+        const cointype = document.getElementById("CoinType").value;
 
+        if (!cointype) return;
         const coinTypes = ["OGDC", "PPL", "NBP", "MEBL", "HBL", "MCB", "FCCL", "LUCK", "EFERT", "ENGRO", "HUBC", "UNITY", "HASCOL", "SNGP", "PSO", "PAEL", "TRG", "ISL", "SEARL", "NML"];
         const index = coinTypes.indexOf(cointype);
 
-        if (index === -1) {
-            console.error("Invalid coin type selected.");
-            return;
+        if (index === -1) return;
+
+        const coinamount = roundTo4Decimals(userCoins[index]);
+
+        if (coinamount > 0) {
+            const teamId = getTeamkey();
+            const response = await fetch(
+                `/.netlify/functions/update?cointype=${cointype}&teamId=${teamId}&transactiontype=sell&coinval=${coinamount}`
+            );
+
+            if (response.ok) await readdata();
         }
-
-        // Retrieve the coin amount from userCoins
-        let coinamount = userCoins[index];
-        if (!coinamount || isNaN(coinamount) || coinamount <= 0) {
-            console.error("Invalid coin amount entered. It must be greater than 0.");
-            return;
-        }
-
-        // Validate team ID
-        const teamId = getTeamkey();
-        if (!teamId) {
-            console.error("Team ID not found.");
-            return;
-        }
-
-        // Make the API call to update the coin transaction
-        const response = await fetch(
-            `/.netlify/functions/update?cointype=${cointype}&teamId=${teamId}&transactiontype=sell&coinval=${coinamount}`
-        );
-
-        if (!response.ok) {
-            throw new Error(`API call failed with status: ${response.status}`);
-        }
-
-        // Update data after successful liquidation
-        await readdata();
-        console.log("Liquidation successful.");
     } catch (error) {
-        console.error("An error occurred:", error);
+        console.error("Error:", error);
     }
 });
-
 updateInput.addEventListener("input", calculateBuyingPower);
 coinTypeInput.addEventListener("change", calculateBuyingPower);
 
@@ -268,7 +203,3 @@ function calculateBuyingPower() {
         console.error("Error in the calculation:", error);
     }
 }
-
-
-
-
