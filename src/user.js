@@ -79,37 +79,43 @@ async function master() {
 async function readdata() {
     try {
         const teamkey = getTeamkey();
-        //const total = await fetch(`/.netlify/functions/totalworth?teamId=${teamId}`);
         const response = await fetch(`/.netlify/functions/read?teamkey=${teamkey}`);
 
         if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.statusU}`);
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
         const data = await response.json();
         userCoins = data.Stock;
         freeCoins = data.free_money;
-        // let sum = freeCoins + (masterCoin.reduce((acc, masterCoinVal, index) => acc + masterCoinVal * userCoins[index], 0));
-        // sum =+sum.toFixed(3);
+
         if (data.error) {
-            //document.getElementById("statusU").innerText = `Error: ${data.error}`;
+            console.error(`Error: ${data.error}`);
         } else {
             const coinIdsU = ['OGDCU', 'PPLU', 'NBPU', 'MEBLU', 'HBLU', 'MCBU', 'FCCLU', 'LUCKU', 'EFERTU', 'ENGROU', 'HUBCU', 'UNITYU', 'HASCOLU', 'SNGPU', 'PSOU', 'PAELU', 'TRGU', 'ISLU', 'SEARLU', 'NMLU'];
 
+            // Update coin holdings for the user
             coinIdsU.forEach((coinId, index) => {
                 const htmlContent = `<pre>${data.Stock[index]}</pre>`;
                 document.getElementById(coinId).innerHTML = htmlContent;
             });
-                   
-            document.getElementById("FreeMoney").innerHTML = "<pre>" + data.free_money + "</pre>";
-            document.getElementById("TotalWorth").innerHTML = "<pre>" + sum + "</pre>";
 
-            };
+            // Display free money
+            document.getElementById("FreeMoney").innerHTML = `<pre>${data.free_money}</pre>`;
 
+            // Calculate total worth on the client side
+            const totalWorth = freeCoins + masterCoin.reduce((acc, masterCoinVal, index) => {
+                return acc + masterCoinVal * userCoins[index];
+            }, 0);
+
+            // Round the total worth and update the UI
+            document.getElementById("TotalWorth").innerHTML = `<pre>${totalWorth.toFixed(3)}</pre>`;
+        }
     } catch (error) {
-        //document.getElementById("statusU").innerText = "Error: " + error;
+        console.error("Error:", error);
     }
 }
+
 supabaseClient
   .channel('userdata')
   .on('postgres_changes', 
@@ -220,9 +226,6 @@ document.getElementById("liquidate").addEventListener("click", async function ()
         console.error("An error occurred:", error);
     }
 });
-const updateInput = document.getElementById("update");
-const buyingPowerDiv = document.querySelector(".buying-power");
-const coinTypeInput = document.getElementById("CoinType");
 
 updateInput.addEventListener("input", calculateBuyingPower);
 coinTypeInput.addEventListener("change", calculateBuyingPower);

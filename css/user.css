@@ -254,3 +254,8 @@ tr:nth-child(odd) {
     height: 0vh !important;
     margin-bottom: 0vh;
 }
+.sidepanel h2 {
+    text-align: center;
+    margin: 0 auto;
+    padding: 10px 0;
+}
