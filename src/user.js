@@ -114,7 +114,7 @@ document.getElementById("readSelectedValue").addEventListener("click", async fun
         let cointype = document.getElementById("CoinType").value;
         let transactiontype = document.getElementById("transactionType").value;
         let coinval = document.getElementById("update").value;
-        const teamId = getTeamId();
+        const teamId = getTeamkey();
         const response = await fetch(`/.netlify/functions/update?cointype=${cointype}&teamId=${teamId}&transactiontype=${transactiontype}&coinval=${coinval}`);
         //const total = await fetch(`/.netlify/functions/totalworth?teamId=${teamId}`);
         await readdata();
