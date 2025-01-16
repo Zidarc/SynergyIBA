@@ -149,7 +149,7 @@ document.getElementById("liquidate").addEventListener("click", async function() 
         const coinTypes = ["OGDC", "PPL", "NBP", "MEBL", "HBL", "MCB", "FCCL", "LUCK", "EFERT", "ENGRO", "HUBC", "UNITY", "HASCOL", "SNGP", "PSO", "PAEL", "TRG", "ISL", "SEARL", "NML"];
         index = coinTypes.indexOf(coinTypes);
         coinamount = document.getElementById(cointype+"U").value;
-        let coinamount = userCoins[index];
+        // let coinamount = userCoins[index];
         const response = await fetch(`/.netlify/functions/update?cointype=${cointype}&teamId=${teamId}&transactiontype=sell&coinval=${coinamount}`);
         //const total = await fetch(`/.netlify/functions/totalworth?teamId=${teamId}`);
         await readdata();
