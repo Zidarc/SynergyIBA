@@ -36,7 +36,7 @@ if (teamId === "MasterCoins") {
 
     const updatedMasterCoinsStock = MasterCoinsStock.map((stock, index) => {
         const change = MCStockChange[index];
-        return stock * (100 + change / 100);
+        return stock * (1 + change / 100);
     });
 
     const updatedMasterCoinsStockChange = MasterCoinsStockChange.map((change, index) => change);

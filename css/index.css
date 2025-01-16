@@ -2,10 +2,12 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Arial', sans-serif;
-    /* background-image: url('https://i.postimg.cc/nhSZ3mg5/Capture.png'); */
+    background-color: #601c94;
+    /* background-image: url('https://i.ibb.co/fv5byPq/465559906-1058200046054418-275529753136380831-n.jpg'); */
     background-size: cover;
     background-position: center;
     height: 100vh;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -14,7 +16,7 @@ body {
 .container {
     max-width: 50%; 
     width: 100%; 
-    background-color: rgba(75, 25, 26, 0.5);
+    background-color: rgba(75, 12, 94, 0.5); /* Darker tone of the primary color */
     padding: 20px;
     border-radius: 10px;
     text-align: center;
@@ -22,7 +24,7 @@ body {
 }
 
 h1 {
-    color: #d8c8b1;
+    color: #FFFDD0; /* Soft beige for good contrast */
     text-align: center;
 }
 
@@ -47,24 +49,22 @@ input {
     text-align: center;
 }
 
-
-
 button {
     padding: 10px;
     margin-top: 10px;
-    background-color: #4b191a;
-    color: #d8c8b1;
+    background-color: #654b77; /* Dark purple tone matching the theme */
+    color: #FFFDD0;
     border: none;
     border-radius: 5px;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: #581c1c;
+    background-color: #7338a3; /* Slightly lighter tone on hover */
 }
 
 #errorbox {
-    color: wheat;
+    color: rgb(209, 26, 26);
     margin-top: 10px;
     text-align: center;
     padding-bottom: 10px;
@@ -78,7 +78,7 @@ button:hover {
 
 .blur-background {
     backdrop-filter: blur(5px);
-    background-color: rgba(0, 0, 0, 0.37);
+    background-color: rgba(0, 0, 0, 0.37); /* Subtle dark blur for contrast */
 }
 
 .center-block {
@@ -89,13 +89,14 @@ button:hover {
     margin-top: 40vh;
     padding-top: 30px;
     padding-bottom: 30px;
-    width :50%
+    width: 50%;
 }
+
 @media (max-width: 600px) {
     .center-block {
         width: 90%;
     }
-    input{
+    input {
         width: 50%;
     }
 }
