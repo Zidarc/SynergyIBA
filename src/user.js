@@ -1,53 +1,56 @@
-import { getTeamId } from "./teamdata.js";
+import { getTeamkey } from "./teamdata.js";
 require('dotenv').config();
 
 let masterCoin;
 let userCoins;
 let freeCoins;
+const supabaseUrl = 'https://ztzjruycuxyblnsgqjqi.supabase.co';  // Replace with your Supabase URL
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0empydXljdXh5Ymxuc2dxanFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY5NzI5OTEsImV4cCI6MjA1MjU0ODk5MX0.2ayQNIfLivLUH5rOnKJrSViIT4jX9Ww3A0xAFv9WlSE';  // Replace with your Supabase anonymous API key
+
+// Create a new client instance with a different variable name
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
 document.addEventListener("DOMContentLoaded", async function() {
     await master();
 });
 async function master() {
     try {
-        const response = await fetch(`/.netlify/functions/read?teamkey=${process.env.master}`);
+        const response = await fetch(`/.netlify/functions/read?teamkey=MasterCoins`);
 
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
         const data = await response.json();
-        masterCoin = data.coins;
+        masterCoin = data.Stock;
         if (data.error) {
             //document.getElementById("status").innerText = `Error: ${data.error}`;
         } else {
-            const coinId = ["Bitcoin", "Polkadot", "Luna", "Dogecoin", "XRP", "BNB", "Ethereum"];
+            const coinId = ['OGDC', 'PPL', 'NBP', 'MEBL', 'HBL', 'MCB', 'FCCL', 'LUCK', 'EFERT', 'ENGRO', 'HUBC', 'UNITY', 'HASCOL', 'SNGP', 'PSO', 'PAEL', 'TRG', 'ISL', 'SEARL', 'NML'];
 
             coinId.forEach((coinId, index) => {
-                const htmlContent = `<pre>${data.coins[index]}</pre>`;
+                const htmlContent = `<pre>${data.Stock[index]}</pre>`;
                 document.getElementById(coinId).innerHTML = htmlContent;
             });
             //document.getElementById("status").innerText = "Data fetched successfully.";
 
 
-            const pccoinIds = ["BTC", "DOT", "LUNA", "DOGE", "XRP", "BNB", "ETH"];
+            const pccoinIds = ['OGDCChange', 'PPLChange', 'NBPChange', 'MEBLChange', 'HBLChange', 'MCBChange', 'FCCLChange', 'LUCKChange', 'EFERTChange', 'ENGROChange', 'HUBCChange', 'UNITYChange', 'HASCOLChange', 'SNGPChange', 'PSOChange', 'PAELChange', 'TRGChange', 'ISLChange', 'SEARLChange', 'NMLChange'];
 
-            pccoinIds.forEach((coinId, index) => {
-                const priceChangeId = `PriceChange${coinId}`;
-                const htmlContent = `<pre>${data.coins_previous[index]}</pre>`;
-                document.getElementById(priceChangeId).innerHTML = htmlContent;
+            pccoinIds.forEach((coinId1, index) => {
+                const htmlContent = `<pre>${data.StockChange[index]}</pre>`;
+                document.getElementById(coinId1).innerHTML = htmlContent;
             });
             
            // document.getElementById("status").innerText = "Data fetched successfully.";
 
-           const coinIds = ["BTC", "DOT", "Terra", "DOGE", "xrp", "bnb", "ETH"];
-
-           coinIds.forEach((coinId, index) => {
-               const trendClass = data.coins_previous[index] > 0 ? "trending_up" :
-                                  data.coins_previous[index] < 0 ? "trending_down" :
+           const coinIds = ['OGDCTrend', 'PPLTrend', 'NBPTrend', 'MEBLTrend', 'HBLTrend', 'MCBTrend', 'FCCLTrend', 'LUCKTrend', 'EFERTTrend', 'ENGROTrend', 'HUBCTrend', 'UNITYTrend', 'HASCOLTrend', 'SNGPTrend', 'PSOTrend', 'PAELTrend', 'TRGTrend', 'ISLTrend', 'SEARLTrend', 'NMLTrend'];
+           coinIds.forEach((coinId2, index) => {
+               const trendClass = data.StockChange[index] > 0 ? "trending_up" :
+                                  data.StockChange[index] < 0 ? "trending_down" :
                                   "unknown_med";
                
-               document.getElementById(coinId).innerText = trendClass;
+               document.getElementById(coinId2).innerText = trendClass;
            });
 
             coinIds.forEach((coinId) => {
@@ -85,17 +88,17 @@ async function readdata() {
         }
 
         const data = await response.json();
-        userCoins = data.coins;
+        userCoins = data.Stock;
         freeCoins = data.free_money;
         let sum = freeCoins + (masterCoin.reduce((acc, masterCoinVal, index) => acc + masterCoinVal * userCoins[index], 0));
-        sum = +sum.toFixed(3);
+        sum =+sum.toFixed(3);
         if (data.error) {
             //document.getElementById("statusU").innerText = `Error: ${data.error}`;
         } else {
-            const coinIdsU = ["BitcoinU", "PolkadotU", "LunaU", "DogecoinU", "XRPU", "BNBU", "EthereumU"];
+            const coinIdsU = ['OGDCU', 'PPLU', 'NBPU', 'MEBLU', 'HBLU', 'MCBU', 'FCCLU', 'LUCKU', 'EFERTU', 'ENGROU', 'HUBCU', 'UNITYU', 'HASCOLU', 'SNGPU', 'PSOU', 'PAELU', 'TRGU', 'ISLU', 'SEARLU', 'NMLU'];
 
             coinIdsU.forEach((coinId, index) => {
-                const htmlContent = `<pre>${data.coins[index]}</pre>`;
+                const htmlContent = `<pre>${data.Stock[index]}</pre>`;
                 document.getElementById(coinId).innerHTML = htmlContent;
             });
                    
@@ -108,6 +111,22 @@ async function readdata() {
         //document.getElementById("statusU").innerText = "Error: " + error;
     }
 }
+supabaseClient
+  .channel('userdata')
+  .on('postgres_changes', 
+    {
+      event: 'UPDATE', // We are listening for updates (changes)
+      schema: 'public',
+      table: 'userdata',
+      filter: 'Team_password=eq.MC', // Filter for the row where Team_password = 'MasterCoins'
+    }, 
+    (payload) => {
+      console.log('Change received!', payload);
+      master();  // Call the master function to update the UI
+    }
+  )
+  .subscribe();
+
 
 document.getElementById("readSelectedValue").addEventListener("click", async function() {
     try {
@@ -129,31 +148,10 @@ document.getElementById("liquidate").addEventListener("click", async function() 
         let transactiontype = 2
         const teamId = getTeamId();
         let index;
-        if (cointype === "bitcoin") {
-            index = 0;
-        } else if (cointype === "polkadot") {
-            index = 1;
-        } else if (cointype === "luna") {
-            index = 2;
-        } else if (cointype === "dogecoin") {
-            index = 3;
-        } else if (cointype === "xrp") {
-            index = 4;
-        } else if (cointype === "bnb") {
-            index = 5;
-        } else if (cointype === "eth"){
-            index = 6;
-        } else {
-            console.error("Invalid coinType:", coinType);
-            return {
-                statusCode: 400,
-                body: JSON.stringify({ error: "Invalid coinType" }),
-            };
-        }
+        const coinTypes = ["OGDC", "PPL", "NBP", "MEBL", "HBL", "MCB", "FCCL", "LUCK", "EFERT", "ENGRO", "HUBC", "UNITY", "HASCOL", "SNGP", "PSO", "PAEL", "TRG", "ISL", "SEARL", "NML"];
+        index = coinTypes.indexOf(coinTypes);
         let coinamount = userCoins[index];
-        let masterprice = masterCoin[index];
-        let coinval = masterprice * coinamount;
-        const response = await fetch(`/.netlify/functions/update?cointype=${cointype}&teamId=${teamId}&transactiontype=${transactiontype}&coinval=${coinval}`);
+        const response = await fetch(`/.netlify/functions/update?cointype=${cointype}&teamId=${teamId}&transactiontype=${transactiontype}&coinval=${coinamount}`);
         //const total = await fetch(`/.netlify/functions/totalworth?teamId=${teamId}`);
         await readdata();
     } catch (error) {
@@ -178,31 +176,15 @@ function calculateBuyingPower() {
 
         let indexs;
 
-        if (coinType === "bitcoin") {
-            indexs = 0;
-        } else if (coinType === "polkadot") {
-            indexs = 1;
-        } else if (coinType === "luna") {
-            indexs = 2;
-        } else if (coinType === "dogecoin") {
-            indexs = 3;
-        } else if (coinType === "xrp") {
-            indexs = 4;
-        } else if (coinType === "bnb") {
-            indexs = 5;
-        } else if (coinType === "eth") {
-            indexs = 6;
-        } else {
-            console.error("Invalid coinType:", coinType);
-            return;
-        }
+        const coinTypes = ["OGDC", "PPL", "NBP", "MEBL", "HBL", "MCB", "FCCL", "LUCK", "EFERT", "ENGRO", "HUBC", "UNITY", "HASCOL", "SNGP", "PSO", "PAEL", "TRG", "ISL", "SEARL", "NML"];
+        indexs = coinTypes.indexOf(coinType);
 
         if (indexs === undefined) {
             console.error("Invalid coinType:", coinType);
             return;
         }
 
-        const content = inputValue / masterCoin[indexs];
+        const content = inputValue * masterCoin[indexs];
 
         buyingPowerDiv.textContent = ` ${content}`;
     } catch (error) {
