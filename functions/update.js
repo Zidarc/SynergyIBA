@@ -38,8 +38,10 @@ exports.handler = async (event, context) => {
                     .toNumber();
             });
 
-            const updatedMasterCoinsStockChange = MasterCoinsStockChange.map((change, index) => new Decimal(change).plus(new Decimal(MCStockChange[index])).toNumber());
-
+            const updatedMasterCoinsStockChange = MasterCoinsStockChange.map((change, index) => {
+                return new Decimal(MCStockChange[index]).toNumber();
+              });
+              
             const { error: updateError } = await supabase
                 .from('userdata')
                 .update({
