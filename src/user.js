@@ -127,23 +127,55 @@ supabaseClient
   .subscribe();
 
 
-document.getElementById("readSelectedValue").addEventListener("click", async function() {
+  document.getElementById("readSelectedValue").addEventListener("click", async function () {
     try {
+        // Retrieve and validate input values
         let cointype = document.getElementById("CoinType").value;
         let transactiontype = document.getElementById("transactionType").value;
         let coinval = document.getElementById("update").value;
+
+        if (!cointype) {
+            console.error("Coin type is not selected or invalid.");
+            return;
+        }
+
+        if (!transactiontype) {
+            console.error("Transaction type is not selected or invalid.");
+            return;
+        }
+
+        if (!coinval || isNaN(coinval) || coinval <= 0) {
+            console.error("Invalid coin value entered. It must be greater than 0.");
+            return;
+        }
+
+        // Validate team ID
         const teamId = getTeamkey();
-        const response = await fetch(`/.netlify/functions/update?cointype=${cointype}&teamId=${teamId}&transactiontype=${transactiontype}&coinval=${coinval}`);
-        //const total = await fetch(`/.netlify/functions/totalworth?teamId=${teamId}`);
+        if (!teamId) {
+            console.error("Team ID not found.");
+            return;
+        }
+
+        // Make the API call to update the coin transaction
+        const response = await fetch(
+            `/.netlify/functions/update?cointype=${cointype}&teamId=${teamId}&transactiontype=${transactiontype}&coinval=${coinval}`
+        );
+
+        if (!response.ok) {
+            throw new Error(`API call failed with status: ${response.status}`);
+        }
+
+        // Update data after successful transaction
         await readdata();
+        console.log("Transaction successful.");
     } catch (error) {
-        //document.getElementById("statusN").innerText = " Error: " + error;
+        console.error("An error occurred:", error);
     }
 });
 
 document.getElementById("liquidate").addEventListener("click", async function () {
     try {
-        // Retrieve the coin type and validate it
+        // Retrieve and validate the coin type
         let cointype = document.getElementById("CoinType").value;
         if (!cointype) {
             console.error("Coin type is not selected or invalid.");
@@ -158,14 +190,14 @@ document.getElementById("liquidate").addEventListener("click", async function ()
             return;
         }
 
-        // Retrieve the coin amount from the corresponding input field
-        let coinamount = userCoins[index]
-        if (!coinamount || isNaN(coinamount)) {
-            console.error("Invalid coin amount entered.");
+        // Retrieve the coin amount from userCoins
+        let coinamount = userCoins[index];
+        if (!coinamount || isNaN(coinamount) || coinamount <= 0) {
+            console.error("Invalid coin amount entered. It must be greater than 0.");
             return;
         }
 
-        // Get the team ID
+        // Validate team ID
         const teamId = getTeamkey();
         if (!teamId) {
             console.error("Team ID not found.");
@@ -181,45 +213,59 @@ document.getElementById("liquidate").addEventListener("click", async function ()
             throw new Error(`API call failed with status: ${response.status}`);
         }
 
+        // Update data after successful liquidation
         await readdata();
-        console.log("Transaction successful.");
+        console.log("Liquidation successful.");
     } catch (error) {
         console.error("An error occurred:", error);
     }
 });
-
-
-
 const updateInput = document.getElementById("update");
 const buyingPowerDiv = document.querySelector(".buying-power");
 const coinTypeInput = document.getElementById("CoinType");
-
 
 updateInput.addEventListener("input", calculateBuyingPower);
 coinTypeInput.addEventListener("change", calculateBuyingPower);
 
 function calculateBuyingPower() {
     try {
+        // Retrieve input values and validate
         const inputValue = updateInput.value;
         const coinType = coinTypeInput.value;
 
-        let indexs;
-
-        const coinTypes = ["OGDC", "PPL", "NBP", "MEBL", "HBL", "MCB", "FCCL", "LUCK", "EFERT", "ENGRO", "HUBC", "UNITY", "HASCOL", "SNGP", "PSO", "PAEL", "TRG", "ISL", "SEARL", "NML"];
-        indexs = coinTypes.indexOf(coinType);
-
-        if (indexs === undefined) {
-            console.error("Invalid coinType:", coinType);
+        if (!coinType) {
+            console.error("Coin type is not selected or invalid.");
             return;
         }
 
-        const content = inputValue * masterCoin[indexs];
+        if (!inputValue || isNaN(inputValue) || inputValue <= 0) {
+            console.error("Invalid input value for calculation. It must be greater than 0.");
+            return;
+        }
 
+        // Validate coin type and calculate buying power
+        const coinTypes = ["OGDC", "PPL", "NBP", "MEBL", "HBL", "MCB", "FCCL", "LUCK", "EFERT", "ENGRO", "HUBC", "UNITY", "HASCOL", "SNGP", "PSO", "PAEL", "TRG", "ISL", "SEARL", "NML"];
+        const index = coinTypes.indexOf(coinType);
+
+        if (index === -1) {
+            console.error("Invalid coin type for calculation.");
+            return;
+        }
+
+        const content = inputValue * masterCoin[index];
+
+        if (isNaN(content)) {
+            console.error("Error in calculation: result is NaN.");
+            return;
+        }
+
+        // Display calculated buying power
         buyingPowerDiv.textContent = ` ${content}`;
     } catch (error) {
         console.error("Error in the calculation:", error);
     }
 }
+
 
 
 
