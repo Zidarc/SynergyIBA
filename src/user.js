@@ -162,6 +162,9 @@ document.getElementById("liquidate").addEventListener("click", async function ()
         console.error("Error:", error);
     }
 });
+const updateInput = document.getElementById("update");
+const coinTypeInput = document.getElementById("CoinType");
+const buyingPowerDiv = document.getElementById("buyingPowerDiv");
 updateInput.addEventListener("input", calculateBuyingPower);
 coinTypeInput.addEventListener("change", calculateBuyingPower);
 
