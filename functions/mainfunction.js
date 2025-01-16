@@ -68,6 +68,11 @@ exports.handler = async (event, context) => {
 
         return {
             statusCode: 200,
+            headers: {
+                "Access-Control-Allow-Origin": "*",  // Allows any origin to access the function
+                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",  // Allow these HTTP methods
+                "Access-Control-Allow-Headers": "Content-Type, Authorization",  // Allow these headers
+            },
             body: JSON.stringify({ message: "MasterCoins data and MCStockChange updated successfully." }),
         };
 
@@ -75,6 +80,9 @@ exports.handler = async (event, context) => {
         console.error("Error in the function:", error);
         return {
             statusCode: 500,
+            headers: {
+                "Access-Control-Allow-Origin": "*",  // Allows any origin to access the function
+            },
             body: JSON.stringify({ error: "Internal Server Error", details: error.message }),
         };
     }
