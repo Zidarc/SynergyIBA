@@ -85,7 +85,7 @@ exports.handler = async (event, context) => {
             const { data: UserData, error: userError } = await supabase
                 .from('userdata')
                 .select('Stock, free_money')
-                .eq('team_password', teamId)
+                .eq('Team_password', teamId)
                 .single();
 
             if (userError) {
@@ -100,7 +100,7 @@ exports.handler = async (event, context) => {
             const { data: masterData, error: masterError } = await supabase
                 .from('userdata')
                 .select('Stock')
-                .eq('team_password', 'MasterCoins')
+                .eq('Team_password', 'MasterCoins')
                 .single();
 
             if (masterError) {
@@ -151,7 +151,7 @@ exports.handler = async (event, context) => {
                             Stock: updatedStock,
                             free_money: increment.toNumber(), // Convert to native number
                         })
-                        .eq('team_password', teamId)
+                        .eq('Team_password', teamId)
                         .single();
             
                     if (updateError) {
