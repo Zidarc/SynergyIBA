@@ -1,4 +1,4 @@
-import { getTeamkey } from "./teamdata.js";
+import { getTeamkey } from "../src/teamdata";
 
 let masterCoin;
 let userCoins;
