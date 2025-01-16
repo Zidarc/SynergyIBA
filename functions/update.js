@@ -9,12 +9,26 @@ exports.handler = async (event, context) => {
         const coinType = event.queryStringParameters && event.queryStringParameters.cointype;
         const transactionType = event.queryStringParameters && event.queryStringParameters.transactiontype;
         let coinVal = new Decimal(event.queryStringParameters && event.queryStringParameters.coinval);
+        
+        // Validate coinVal (ensure it's a positive number and not zero)
+        if (coinVal.lte(0)) {
+            return {
+                statusCode: 400,
+                body: JSON.stringify({ error: "coinVal must be a positive number greater than zero" }),
+            };
+        }
+        
         let index;
         let type;
         if (transactionType === "buy") {
             type = 1;
-        } else {
+        } else if (transactionType === "sell") {
             type = 2;
+        } else {
+            return {
+                statusCode: 400,
+                body: JSON.stringify({ error: "Invalid transactionType. It must be either 'buy' or 'sell'" }),
+            };
         }
 
         const coinTypes = ["OGDC", "PPL", "NBP", "MEBL", "HBL", "MCB", "FCCL", "LUCK", "EFERT", "ENGRO", "HUBC", "UNITY", "HASCOL", "SNGP", "PSO", "PAEL", "TRG", "ISL", "SEARL", "NML"];
@@ -47,8 +61,17 @@ exports.handler = async (event, context) => {
                 body: JSON.stringify({ error: userError.message }),
             };
         }
-        let freeCoins = new Decimal(UserData.free_money);
-        let userCoinVal = new Decimal(UserData.Stock[index]);
+
+        let freeCoins = new Decimal(UserData.free_money).toFixed(4); // Round to 4 decimal places
+        let userCoinVal = new Decimal(UserData.Stock[index]).toFixed(4); // Round to 4 decimal places
+
+        // Ensure freeCoins and userCoinVal are not negative
+        if (freeCoins.lte(0) || userCoinVal.lte(0)) {
+            return {
+                statusCode: 400,
+                body: JSON.stringify({ error: "Negative values are not allowed for free_money or Stock" }),
+            };
+        }
 
         const { data: masterData, error: masterError } = await supabase
             .from('userdata')
@@ -63,13 +86,21 @@ exports.handler = async (event, context) => {
             };
         }
 
-        const serverCoinVal = new Decimal(masterData.Stock[index]);
+        const serverCoinVal = new Decimal(masterData.Stock[index]).toFixed(4); // Round to 4 decimal places
+
+        // Ensure serverCoinVal is not negative
+        if (serverCoinVal.lte(0)) {
+            return {
+                statusCode: 400,
+                body: JSON.stringify({ error: "Server coin value cannot be negative" }),
+            };
+        }
 
         if (type === 1) {
             if (serverCoinVal.mul(coinVal).lte(freeCoins)) {
-                const updatedBalance = freeCoins.minus(serverCoinVal.mul(coinVal));
+                const updatedBalance = freeCoins.minus(serverCoinVal.mul(coinVal)).toFixed(4); // Round to 4 decimal places
                 const updatedStock = [...UserData.Stock];
-                updatedStock[index] = userCoinVal.plus(coinVal).toNumber(); // Convert to float8-compatible value
+                updatedStock[index] = userCoinVal.plus(coinVal).toFixed(4); // Round to 4 decimal places
 
                 const { data: updatedData, error: updateError } = await supabase
                     .from('userdata')
@@ -91,12 +122,17 @@ exports.handler = async (event, context) => {
                     statusCode: 200,
                     body: JSON.stringify({ message: "Document updated successfully.", data: updatedData }),
                 };
+            } else {
+                return {
+                    statusCode: 400,
+                    body: JSON.stringify({ error: "Insufficient funds to complete the buy transaction" }),
+                };
             }
         } else if (type === 2) {
             if (coinVal.lte(userCoinVal)) {
-                const increment = freeCoins.plus(coinVal.mul(serverCoinVal));
+                const increment = freeCoins.plus(coinVal.mul(serverCoinVal)).toFixed(4); // Round to 4 decimal places
                 const updatedStock = [...UserData.Stock];
-                updatedStock[index] = userCoinVal.minus(coinVal).toNumber(); // Convert to float8-compatible value
+                updatedStock[index] = userCoinVal.minus(coinVal).toFixed(4); // Round to 4 decimal places
 
                 const { data: updatedData, error: updateError } = await supabase
                     .from('userdata')
@@ -118,8 +154,14 @@ exports.handler = async (event, context) => {
                     statusCode: 200,
                     body: JSON.stringify({ message: "Document updated successfully.", data: updatedData }),
                 };
+            } else {
+                return {
+                    statusCode: 400,
+                    body: JSON.stringify({ error: "Not enough stock to complete the sell transaction" }),
+                };
             }
         }
+
         return {
             statusCode: 400,
             body: JSON.stringify({ error: "Invalid transactionType or coinVal" }),
