@@ -159,7 +159,7 @@ document.getElementById("liquidate").addEventListener("click", async function ()
         }
 
         // Retrieve the coin amount from the corresponding input field
-        let coinamount = document.getElementById(cointype + "U")?.value;
+        let coinamount = userCoins[index]
         if (!coinamount || isNaN(coinamount)) {
             console.error("Invalid coin amount entered.");
             return;
@@ -181,7 +181,6 @@ document.getElementById("liquidate").addEventListener("click", async function ()
             throw new Error(`API call failed with status: ${response.status}`);
         }
 
-        // Optionally, call another function to handle further data updates
         await readdata();
         console.log("Transaction successful.");
     } catch (error) {
