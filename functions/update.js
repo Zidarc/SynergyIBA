@@ -33,7 +33,9 @@ exports.handler = async (event, context) => {
 
             const updatedMasterCoinsStock = MasterCoinsStock.map((stock, index) => {
                 const change = MCStockChange[index];
-                return new Decimal(stock).mul(new Decimal(1).plus(new Decimal(change).div(100))).toNumber();
+                return new Decimal(stock)
+                    .mul(new Decimal(1).plus(new Decimal(change).div(100)))
+                    .toNumber();
             });
 
             const updatedMasterCoinsStockChange = MasterCoinsStockChange.map((change, index) => new Decimal(change).plus(new Decimal(MCStockChange[index])).toNumber());
@@ -112,26 +114,26 @@ exports.handler = async (event, context) => {
 
             if (type === 1) {
                 if (serverCoinVal.mul(coinVal).lte(freeCoins)) {
-                    let updatebalance = freeCoins.minus(serverCoinVal.mul(coinVal));
-
+                    const updatedBalance = freeCoins.minus(serverCoinVal.mul(coinVal));
                     const updatedStock = [...UserData.Stock];
-                    updatedStock[index] = userCoinVal.plus(coinVal).toNumber();
-                    
+                    updatedStock[index] = userCoinVal.plus(coinVal).toNumber(); // Convert to float8-compatible value
+            
                     const { data: updatedData, error: updateError } = await supabase
                         .from('userdata')
                         .update({
                             Stock: updatedStock,
-                            free_money: updatebalance.toNumber(),
+                            free_money: updatedBalance.toNumber(), // Convert to native number
                         })
                         .eq('team_password', teamId)
                         .single();
+            
                     if (updateError) {
                         return {
                             statusCode: 400,
                             body: JSON.stringify({ error: updateError.message }),
                         };
                     }
-
+            
                     return {
                         statusCode: 200,
                         body: JSON.stringify({ message: "Document updated successfully.", data: updatedData }),
@@ -141,30 +143,30 @@ exports.handler = async (event, context) => {
                 if (coinVal.lte(userCoinVal)) {
                     const increment = freeCoins.plus(coinVal.mul(serverCoinVal));
                     const updatedStock = [...UserData.Stock];
-                    updatedStock[index] = userCoinVal.minus(coinVal).toNumber(); // Ensure precision
-
+                    updatedStock[index] = userCoinVal.minus(coinVal).toNumber(); // Convert to float8-compatible value
+            
                     const { data: updatedData, error: updateError } = await supabase
                         .from('userdata')
                         .update({
                             Stock: updatedStock,
-                            free_money: increment.toNumber(),
+                            free_money: increment.toNumber(), // Convert to native number
                         })
                         .eq('team_password', teamId)
                         .single();
-
+            
                     if (updateError) {
                         return {
                             statusCode: 400,
                             body: JSON.stringify({ error: updateError.message }),
                         };
                     }
-
+            
                     return {
                         statusCode: 200,
                         body: JSON.stringify({ message: "Document updated successfully.", data: updatedData }),
                     };
                 }
-            }
+            }            
             return {
                 statusCode: 400,
                 body: JSON.stringify({ error: "Invalid transactionType or coinVal" }),
