@@ -124,7 +124,7 @@ exports.handler = async (event, context) => {
                             Stock: updatedStock,
                             free_money: updatedBalance.toNumber(), // Convert to native number
                         })
-                        .eq('team_password', teamId)
+                        .eq('Team_password', teamId)
                         .single();
             
                     if (updateError) {
