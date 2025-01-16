@@ -12,6 +12,6 @@
     "parcel": "^2.13.3"
   },
   "scripts": {
-    "build": "parcel build src/dummy.html"
+    "build": "parcel build src/user.html"
   }
 }
