@@ -9,58 +9,50 @@ exports.handler = async (event, context) => {
     try {
         const teamId = event.queryStringParameters && event.queryStringParameters.teamId;
 
-                let { data: MasterCoinsdata, error: masterCoinsError } = await supabase
-                    .from('userdata')
-                    .select('*')
-                    .eq('Team_password', 'MasterCoins')
-                    .single();
+const { data: MasterCoinsdata, error: masterCoinsError } = await supabase
+    .from('userdata')
+    .select('*')
+    .eq('Team_password', 'MasterCoins')
+    .single();
 
-                if (masterCoinsError) {
-                    throw new Error(`Error fetching MasterCoins data: ${masterCoinsError.message}`);
-                }
+if (masterCoinsError) {
+    throw new Error(`Error fetching MasterCoins data: ${masterCoinsError.message}`);
+}
 
-                if (teamId === "MasterCoins") {
-                    // Fetch MC data
-                    let { data: MCdata, error: mcError } = await supabase
-                        .from('userdata')
-                        .eq('Team_password', 'MC')
-                        .single();
+if (teamId === "MasterCoins") {
+    const { data: MCdata, error: mcError } = await supabase
+        .from('userdata')
+        .select('*')
+        .eq('Team_password', 'MC')
+        .single();
 
-                    if (mcError) {
-                        throw new Error(`Error fetching MC data: ${mcError.message}`);
-                    }
+    if (mcError) {
+        throw new Error(`Error fetching MC data: ${mcError.message}`);
+    }
 
-                    // Extract Stock and StockChange arrays
-                    const MasterCoinsStock = MasterCoinsdata.Stock;
-                    const MasterCoinsStockChange = MasterCoinsdata.StockChange;
-                    const MCStockChange = MCdata.StockChange;
+    const MasterCoinsStock = MasterCoinsdata.Stock;
+    const MasterCoinsStockChange = MasterCoinsdata.StockChange;
+    const MCStockChange = MCdata.StockChange;
 
-                    // Apply percentage changes from MCStockChange to MasterCoinsStock
-                    const updatedMasterCoinsStock = MasterCoinsStock.map((stock, index) => {
-                        const change = MCStockChange[index];
-                        return stock * (100 + change / 100);
-                    });
+    const updatedMasterCoinsStock = MasterCoinsStock.map((stock, index) => {
+        const change = MCStockChange[index];
+        return stock * (100 + change / 100);
+    });
 
-                    const updatedMasterCoinsStockChange = MasterCoinsStockChange.map((change, index) => {
-                        return change;
-                    });
+    const updatedMasterCoinsStockChange = MasterCoinsStockChange.map((change, index) => change);
 
-                    // Update MasterCoinsdata with new values
-                    MasterCoinsdata.Stock = updatedMasterCoinsStock;
-                    MasterCoinsdata.StockChange = updatedMasterCoinsStockChange;
+    const { error: updateError } = await supabase
+        .from('userdata')
+        .update({
+            Stock: updatedMasterCoinsStock,
+            StockChange: updatedMasterCoinsStockChange
+        })
+        .eq('Team_password', 'MasterCoins');
 
-                    // Update the MasterCoins table with new data
-                    const { error: updateError } = await supabase
-                        .from('userdata')
-                        .update({
-                            Stock: updatedMasterCoinsStock,
-                            StockChange: updatedMasterCoinsStockChange
-                        })
-                        .eq('Team_password', "MasterCoins");
+    if (updateError) {
+        throw new Error(`Error updating MasterCoins data: ${updateError.message}`);
+    }
 
-                    if (updateError) {
-                        throw new Error(`Error updating MasterCoins data: ${updateError.message}`);
-                    }
                 } else {    
                         const coinType = event.queryStringParameters && event.queryStringParameters.cointype;
                         const transactionType = event.queryStringParameters && event.queryStringParameters.transactiontype;
