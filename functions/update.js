@@ -62,8 +62,9 @@ exports.handler = async (event, context) => {
             };
         }
 
-        let freeCoins = new Decimal(UserData.free_money).toFixed(4); // Round to 4 decimal places
-        let userCoinVal = new Decimal(UserData.Stock[index]).toFixed(4); // Round to 4 decimal places
+        // Keep the variables as Decimal instances for calculations
+        let freeCoins = new Decimal(UserData.free_money);
+        let userCoinVal = new Decimal(UserData.Stock[index]);
 
         // Ensure freeCoins and userCoinVal are not negative
         if (freeCoins.lte(0) || userCoinVal.lte(0)) {
@@ -86,7 +87,7 @@ exports.handler = async (event, context) => {
             };
         }
 
-        const serverCoinVal = new Decimal(masterData.Stock[index]).toFixed(4); // Round to 4 decimal places
+        const serverCoinVal = new Decimal(masterData.Stock[index]);
 
         // Ensure serverCoinVal is not negative
         if (serverCoinVal.lte(0)) {
@@ -97,8 +98,9 @@ exports.handler = async (event, context) => {
         }
 
         if (type === 1) {
+            // Buy operation
             if (serverCoinVal.mul(coinVal).lte(freeCoins)) {
-                const updatedBalance = freeCoins.minus(serverCoinVal.mul(coinVal)).toFixed(4); // Round to 4 decimal places
+                const updatedBalance = freeCoins.minus(serverCoinVal.mul(coinVal));
                 const updatedStock = [...UserData.Stock];
                 updatedStock[index] = userCoinVal.plus(coinVal).toFixed(4); // Round to 4 decimal places
 
@@ -106,7 +108,7 @@ exports.handler = async (event, context) => {
                     .from('userdata')
                     .update({
                         Stock: updatedStock,
-                        free_money: updatedBalance.toNumber(), // Convert to native number
+                        free_money: updatedBalance.toFixed(4), // Ensure free_money is in 4 decimal places
                     })
                     .eq('Team_password', teamId)
                     .single();
@@ -129,8 +131,9 @@ exports.handler = async (event, context) => {
                 };
             }
         } else if (type === 2) {
+            // Sell operation
             if (coinVal.lte(userCoinVal)) {
-                const increment = freeCoins.plus(coinVal.mul(serverCoinVal)).toFixed(4); // Round to 4 decimal places
+                const increment = freeCoins.plus(coinVal.mul(serverCoinVal));
                 const updatedStock = [...UserData.Stock];
                 updatedStock[index] = userCoinVal.minus(coinVal).toFixed(4); // Round to 4 decimal places
 
@@ -138,7 +141,7 @@ exports.handler = async (event, context) => {
                     .from('userdata')
                     .update({
                         Stock: updatedStock,
-                        free_money: increment.toNumber(), // Convert to native number
+                        free_money: increment.toFixed(4), // Ensure free_money is in 4 decimal places
                     })
                     .eq('Team_password', teamId)
                     .single();
