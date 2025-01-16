@@ -20,6 +20,7 @@ body {
         margin-top: -10vh;
         padding-top: 5vh;
         height: auto !important;
+        overflow-x: auto; /* Added for horizontal overflow handling */
     }
     body {
         display: block;
@@ -31,15 +32,17 @@ body {
     }
     .logos {
         display: flex !important;
+        flex-wrap: wrap; /* Added for better wrapping of content */
+        justify-content: center; /* Center align for smaller screens */
         border-radius: 50;
     }
-    .cedar {
-        margin-right: 2vh;
-    }
+    .cedar,
     .ccx {
         margin-right: 2vh;
+        margin-bottom: 2vh; /* Added spacing for stacked items */
     }
 }
+
 @media (max-height: 500px) {
     .sidepanel {
         width: 100% !important;
@@ -49,6 +52,7 @@ body {
         margin-top: -10vh;
         padding-top: 5vh;
         height: auto !important;
+        overflow-y: auto; /* Added to handle vertical scrolling */
     }
     body {
         display: block;
@@ -56,13 +60,33 @@ body {
     }
     .logos {
         display: flex !important;
+        flex-wrap: wrap; /* Added for wrapping on smaller heights */
+        justify-content: center;
         border-radius: 50;
     }
-    .cedar {
-        margin-right: 2vh;
-    }
+    .cedar,
     .ccx {
         margin-right: 2vh;
+        margin-bottom: 2vh;
+    }
+}
+
+@media (max-width: 480px) {
+    .updateline p,
+    .updateline label,
+    .updateline select,
+    .updateline button {
+        display: block; /* Stack items vertically */
+        margin: 10px auto; /* Center align items */
+        text-align: center;
+    }
+    .updateline input[type="number"],
+    .updateline select {
+        width: 90%; /* Make inputs occupy most of the width */
+    }
+    .updateline button {
+        width: auto; /* Allow buttons to resize as needed */
+        font-size: 14px; /* Adjust font size for smaller screens */
     }
 }
 
