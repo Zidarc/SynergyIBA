@@ -1,5 +1,4 @@
 import { getTeamkey } from "./teamdata.js";
-require('dotenv').config();
 
 let masterCoin;
 let userCoins;
