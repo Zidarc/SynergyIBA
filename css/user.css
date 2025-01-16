@@ -9,7 +9,7 @@ body {
     font-family: 'Montserrat', sans-serif;
     display: flex;
     flex-direction: row;   
-    height: 100vh;
+    height: auto;
   }
   @media (max-width: 768px) {
     .sidepanel{
@@ -57,11 +57,6 @@ body {
     body {
         display: block;
         margin: 0 !important;
-    }
-    .user_panel{
-        padding-bottom: 5vh;
-        margin-left: 0 !important;
-
     }
     .Master_Table{
         margin-top: 10vh !important;
@@ -116,9 +111,7 @@ body {
     margin-right: 10px;
 }
 
-.user_panel {
-    flex-grow: 1;
-}
+
 .Balance #TotalWorth {
     color: white;   
     font-size: 1.65em !important;
@@ -128,10 +121,9 @@ body {
     margin-bottom: 1vh;
 }
 .sidepanel{
-    width: 40%;
-    height:100%;
+    width: 100%;
     background-color: #1e2329;
-    border-right: 2px solid black;
+    border-right: 0px solid black;
     flex: 0 0 auto;
     top: 0;
     left: 0;
