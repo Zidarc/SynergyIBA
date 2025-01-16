@@ -144,7 +144,7 @@ document.getElementById("readSelectedValue").addEventListener("click", async fun
 document.getElementById("liquidate").addEventListener("click", async function() {
     try {
         let cointype = document.getElementById("CoinType").value;
-        const teamId = getTeamId();
+        const teamId = getTeamkey();
         let index;
         const coinTypes = ["OGDC", "PPL", "NBP", "MEBL", "HBL", "MCB", "FCCL", "LUCK", "EFERT", "ENGRO", "HUBC", "UNITY", "HASCOL", "SNGP", "PSO", "PAEL", "TRG", "ISL", "SEARL", "NML"];
         index = coinTypes.indexOf(coinTypes);
