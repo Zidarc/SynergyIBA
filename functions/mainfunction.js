@@ -41,7 +41,7 @@ exports.handler = async (event, context) => {
             return new Decimal(MCStockChange[index] || 0).toNumber();
         });
 
-        // Update the MasterCoins data first
+        // Update the MasterCoins data with the new values
         const { error: updateMasterCoinsError } = await supabase
             .from('userdata')
             .update({
@@ -69,9 +69,9 @@ exports.handler = async (event, context) => {
         return {
             statusCode: 200,
             headers: {
-                "Access-Control-Allow-Origin": "*",  // Allows any origin to access the function
-                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",  // Allow these HTTP methods
-                "Access-Control-Allow-Headers": "Content-Type, Authorization",  // Allow these headers
+                "Access-Control-Allow-Origin": "*",  
+                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",  
+                "Access-Control-Allow-Headers": "Content-Type, Authorization",  
             },
             body: JSON.stringify({ message: "MasterCoins data and MCStockChange updated successfully." }),
         };
@@ -81,7 +81,7 @@ exports.handler = async (event, context) => {
         return {
             statusCode: 500,
             headers: {
-                "Access-Control-Allow-Origin": "*",  // Allows any origin to access the function
+                "Access-Control-Allow-Origin": "*",
             },
             body: JSON.stringify({ error: "Internal Server Error", details: error.message }),
         };

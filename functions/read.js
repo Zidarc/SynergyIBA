@@ -1,7 +1,6 @@
 require('dotenv').config();
 const { createClient } = require('@supabase/supabase-js'); 
 
-// Initialize Supabase client
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 exports.handler = async (event, context) => {
@@ -17,8 +16,7 @@ exports.handler = async (event, context) => {
         }
 
         console.log("Executing query with teamkey:", teamkey);
-        
-        // Query Supabase to find the team with the given teamkey
+
         const { data, error } = await supabase
             .from('userdata')
             .select('*')

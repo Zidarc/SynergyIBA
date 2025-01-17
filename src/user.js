@@ -3,10 +3,9 @@ import { getTeamkey } from "./teamdata.js";
 let masterCoin;
 let userCoins;
 let freeCoins;
-const supabaseUrl = 'https://ztzjruycuxyblnsgqjqi.supabase.co';  // Replace with your Supabase URL
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0empydXljdXh5Ymxuc2dxanFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY5NzI5OTEsImV4cCI6MjA1MjU0ODk5MX0.2ayQNIfLivLUH5rOnKJrSViIT4jX9Ww3A0xAFv9WlSE';  // Replace with your Supabase anonymous API key
+const supabaseUrl = 'https://ztzjruycuxyblnsgqjqi.supabase.co';  
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0empydXljdXh5Ymxuc2dxanFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY5NzI5OTEsImV4cCI6MjA1MjU0ODk5MX0.2ayQNIfLivLUH5rOnKJrSViIT4jX9Ww3A0xAFv9WlSE';  
 
-// Create a new client instance with a different variable name
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
 document.addEventListener("DOMContentLoaded", async function() {
@@ -107,14 +106,14 @@ supabaseClient
   .channel('userdata')
   .on('postgres_changes', 
     {
-      event: 'UPDATE', // We are listening for updates (changes)
+      event: 'UPDATE', 
       schema: 'public',
       table: 'userdata',
-      filter: 'Team_password=eq.MC', // Filter for the row where Team_password = 'MasterCoins'
+      filter: 'Team_password=eq.MC',
     }, 
     (payload) => {
       console.log('Change received!', payload);
-      master();  // Call the master function to update the UI
+      master(); 
     }
   )
   .subscribe();
@@ -170,7 +169,6 @@ coinTypeInput.addEventListener("change", calculateBuyingPower);
 
 function calculateBuyingPower() {
     try {
-        // Retrieve input values and validate
         const inputValue = updateInput.value;
         const coinType = coinTypeInput.value;
 
@@ -183,8 +181,6 @@ function calculateBuyingPower() {
             console.error("Invalid input value for calculation. It must be greater than 0.");
             return;
         }
-
-        // Validate coin type and calculate buying power
         const coinTypes = ["OGDC", "PPL", "NBP", "MEBL", "HBL", "MCB", "FCCL", "LUCK", "EFERT", "ENGRO", "HUBC", "UNITY", "HASCOL", "SNGP", "PSO", "PAEL", "TRG", "ISL", "SEARL", "NML"];
         const index = coinTypes.indexOf(coinType);
 
@@ -200,7 +196,6 @@ function calculateBuyingPower() {
             return;
         }
 
-        // Display calculated buying power
         buyingPowerDiv.textContent = ` ${content}`;
     } catch (error) {
         console.error("Error in the calculation:", error);
