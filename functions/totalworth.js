@@ -1,7 +1,7 @@
 const { createClient } = require('@supabase/supabase-js');
-
+require('dotenv').config();
 // Initialize Supabase client
-const supabase = createClient('https://your-project-url.supabase.co', 'your-public-api-key');
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 exports.handler = async (event, context) => {
     try {
