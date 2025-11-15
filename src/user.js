@@ -1,18 +1,19 @@
 import { getTeamkey } from "./teamdata.js";
+const { createClient } = require('@supabase/supabase-js');
 
 let masterCoin;
 let userCoins;
 let freeCoins;
-const supabaseUrl = 'https://ztzjruycuxyblnsgqjqi.supabase.co';  
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp0empydXljdXh5Ymxuc2dxanFpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzY5NzI5OTEsImV4cCI6MjA1MjU0ODk5MX0.2ayQNIfLivLUH5rOnKJrSViIT4jX9Ww3A0xAFv9WlSE';  
 
-const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+// const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+const supabaseClient = supabase.createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 document.addEventListener("DOMContentLoaded", async function() {
     await master();
 });
 
-// Utility function to round values to 4 decimal places
+
 function roundTo4Decimals(value) {
     return Math.round(value * 10000) / 10000;
 }

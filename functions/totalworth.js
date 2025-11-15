@@ -33,7 +33,6 @@ exports.handler = async (event, context) => {
             const userStock = user.Stock;
             const freeCoins = user.free_money;
 
-            // Step 4: Check if the arrays have the same length
             if (masterStock.length !== userStock.length) {
                 console.error(`Arrays must have the same length for element-wise multiplication. Skipping team ${teamId}`);
                 continue;

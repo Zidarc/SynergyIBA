@@ -69,13 +69,13 @@ exports.handler = async (event, context) => {
             if (serverCoinVal.mul(coinVal).lte(freeCoins)) {
                 const updatedBalance = freeCoins.minus(serverCoinVal.mul(coinVal));
                 const updatedStock = [...UserData.Stock];
-                updatedStock[index] = userCoinVal.plus(coinVal).toNumber(); // Convert to float8-compatible value
+                updatedStock[index] = userCoinVal.plus(coinVal).toNumber(); 
 
                 const { data: updatedData, error: updateError } = await supabase
                     .from('userdata')
                     .update({
                         Stock: updatedStock,
-                        free_money: updatedBalance.toNumber(), // Convert to native number
+                        free_money: updatedBalance.toNumber(),
                     })
                     .eq('Team_password', teamId)
                     .single();

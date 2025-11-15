@@ -20,7 +20,7 @@ body {
         margin-top: -10vh;
         padding-top: 5vh;
         height: auto !important;
-        overflow-x: auto; /* Added for horizontal overflow handling */
+        overflow-x: auto; 
     }
     body {
         display: block;
@@ -32,14 +32,14 @@ body {
     }
     .logos {
         display: flex !important;
-        flex-wrap: wrap; /* Added for better wrapping of content */
-        justify-content: center; /* Center align for smaller screens */
+        flex-wrap: wrap; 
+        justify-content: center; 
         border-radius: 50;
     }
     .cedar,
     .ccx {
         margin-right: 2vh;
-        margin-bottom: 2vh; /* Added spacing for stacked items */
+        margin-bottom: 2vh;
     }
 }
 
@@ -52,7 +52,7 @@ body {
         margin-top: -10vh;
         padding-top: 5vh;
         height: auto !important;
-        overflow-y: auto; /* Added to handle vertical scrolling */
+        overflow-y: auto; 
     }
     body {
         display: block;
@@ -60,7 +60,7 @@ body {
     }
     .logos {
         display: flex !important;
-        flex-wrap: wrap; /* Added for wrapping on smaller heights */
+        flex-wrap: wrap; 
         justify-content: center;
         border-radius: 50;
     }
@@ -76,17 +76,17 @@ body {
     .updateline label,
     .updateline select,
     .updateline button {
-        display: block; /* Stack items vertically */
-        margin: 10px auto; /* Center align items */
+        display: block; 
+        margin: 10px auto; 
         text-align: center;
     }
     .updateline input[type="number"],
     .updateline select {
-        width: 90%; /* Make inputs occupy most of the width */
+        width: 90%; 
     }
     .updateline button {
-        width: auto; /* Allow buttons to resize as needed */
-        font-size: 14px; /* Adjust font size for smaller screens */
+        width: auto; 
+        font-size: 14px; 
     }
 }
 
@@ -96,7 +96,7 @@ body {
     width: 100%;
     backdrop-filter: blur(10px);
     padding: 10px;
-    z-index: 1000; /* Set a high z-index to ensure it's above other elements */
+    z-index: 1000; 
     background-color: #4b1273;
 }
 

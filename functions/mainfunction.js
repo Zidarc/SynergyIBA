@@ -29,7 +29,7 @@ exports.handler = async (event, context) => {
         const MasterCoinsStockChange = MasterCoinsdata.StockChange;
         const MCStockChange = event.queryStringParameters.updatingval ? JSON.parse(event.queryStringParameters.updatingval) : [];
 
-        // Step 1: Update MasterCoinsStock and MasterCoinsStockChange
+        //Update MasterCoinsStock and MasterCoinsStockChange
         const updatedMasterCoinsStock = MasterCoinsStock.map((stock, index) => {
             const change = MCStockChange[index] || 0;
             return new Decimal(stock)
@@ -41,7 +41,6 @@ exports.handler = async (event, context) => {
             return new Decimal(MCStockChange[index] || 0).toNumber();
         });
 
-        // Update the MasterCoins data with the new values
         const { error: updateMasterCoinsError } = await supabase
             .from('userdata')
             .update({
@@ -54,7 +53,7 @@ exports.handler = async (event, context) => {
             throw new Error(`Error updating MasterCoins data: ${updateMasterCoinsError.message}`);
         }
 
-        // Step 2: Now update MCStockChange with the updated MasterCoinsStockChange values
+        //Now update MCStockChange with the updated MasterCoinsStockChange values
         const { error: updateMCStockChangeError } = await supabase
             .from('userdata')
             .update({
