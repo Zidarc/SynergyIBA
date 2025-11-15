@@ -108,7 +108,7 @@ function setupRealtime() {
     supabaseClient
       .channel('userdata')
       .on('postgres_changes', 
-        { event: 'UPDATE', schema: 'public', table: 'userdata', filter: 'Team_password=eq.MasterCoins' },
+        { event: 'UPDATE', schema: 'public', table: 'userdata', filter: 'Team_password=eq.MC' },
         (payload) => {
             console.log("Realtime MasterCoins update received", payload);
 
