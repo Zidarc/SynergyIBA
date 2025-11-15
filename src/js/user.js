@@ -112,15 +112,47 @@ function setupRealtime() {
         (payload) => {
             console.log("Realtime MasterCoins update received", payload);
 
-            if (payload.new) {
-                masterCoin = payload.new.Stock.map(roundTo4Decimals);
-                updateCoinElements(payload.new);
-                fetchUserData(); // Update user holdings immediately
+            if (!payload.new) return;
+            masterCoin = payload.new.Stock.map(roundTo4Decimals);
+            const coinIds = ['OGDC','PPL','NBP','MEBL','HBL','MCB','FCCL','LUCK','EFERT','ENGRO','HUBC','UNITY','HASCOL','SNGP','PSO','PAEL','TRG','ISL','SEARL','NML'];
+            const coinChangeIds = coinIds.map(id => id + 'Change');
+            const coinTrendIds = coinIds.map(id => id + 'Trend');
+
+            coinIds.forEach((id, i) => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = `<pre>${masterCoin[i]}</pre>`;
+            });
+
+            coinChangeIds.forEach((id, i) => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = `<pre>${roundTo4Decimals(payload.new.StockChange[i])}</pre>`;
+            });
+
+            coinTrendIds.forEach((id, i) => {
+                const div = document.getElementById(id);
+                if (!div) return;
+
+                const trendClass = payload.new.StockChange[i] > 0 ? "trending_up"
+                                  : payload.new.StockChange[i] < 0 ? "trending_down"
+                                  : "unknown_med";
+
+                div.textContent = trendClass;
+                div.classList.remove("trending-green","trending-red","trend-black");
+
+                if (trendClass === "trending_up") div.classList.add("trending-green");
+                else if (trendClass === "trending_down") div.classList.add("trending-red");
+                else div.classList.add("trend-black");
+            });
+            if (payload.new.StockUser) {
+                userCoins = payload.new.StockUser.map(roundTo4Decimals);
+                freeCoins = roundTo4Decimals(payload.new.free_money || freeCoins);
+                updateUserElements();
             }
         }
       )
       .subscribe();
 }
+
 
 // ---------------------- Event Listeners ----------------------
 function setupEventListeners() {
