@@ -3,90 +3,126 @@ require('dotenv').config();
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
-exports.handler = async (event, context) => {
+exports.handler = async () => {
     try {
-        // Step 1: Fetch MasterCoins' stock from the 'userdata' table
-        const { data: masterData, error: masterError } = await supabase
+        // ------------------------------------------
+        // 1) Fetch MasterCoins prices
+        // ------------------------------------------
+        const { data: masterRow, error: masterError } = await supabase
             .from('userdata')
             .select('Stock')
             .eq('Team_password', 'MasterCoins')
             .single();
 
-        if (masterError) {
-            throw new Error(`Error fetching MasterCoins data: ${masterError.message}`);
+        if (masterError || !masterRow) {
+            return {
+                statusCode: 500,
+                body: JSON.stringify({ error: "MasterCoins row missing" })
+            };
         }
 
-        const masterStock = masterData.Stock;
+        const masterStock = masterRow.Stock;
+        if (!Array.isArray(masterStock)) {
+            return {
+                statusCode: 500,
+                body: JSON.stringify({ error: "MasterCoins Stock must be an array" })
+            };
+        }
 
-        // Step 2: Fetch all users' stock data
+        // ------------------------------------------
+        // 2) Fetch ALL users (including MasterCoins)
+        // ------------------------------------------
         const { data: users, error: usersError } = await supabase
             .from('userdata')
-            .select('Team_password, Stock, free_money');
+            .select('Team_password, Team_name, Stock, free_money');
 
-        if (usersError) {
-            throw new Error(`Error fetching user data: ${usersError.message}`);
+        if (usersError || !users) {
+            return {
+                statusCode: 500,
+                body: JSON.stringify({ error: "Could not fetch users" })
+            };
         }
 
-        // Step 3: Iterate over all users to calculate their total_worth
-        for (let user of users) {
-            const teamId = user.Team_password;
-            const userStock = user.Stock;
-            const freeCoins = user.free_money;
+        const updates = [];
 
-            if (masterStock.length !== userStock.length) {
-                console.error(`Arrays must have the same length for element-wise multiplication. Skipping team ${teamId}`);
+        // ------------------------------------------
+        // 3) Compute total_worth for each user
+        // ------------------------------------------
+        for (const user of users) {
+            if (user.Team_password === "MasterCoins") continue; // Skip MasterCoins row
+
+            const teamId = user.Team_password;
+            const userStock = user.Stock || [];
+            const freeMoney = Number(user.free_money || 0);
+
+            if (!Array.isArray(userStock)) {
+                console.warn(`Skipping ${teamId}: Stock is not an array.`);
                 continue;
             }
 
-            // Step 5: Calculate the sum of the product of stock arrays
-            let sum = userStock.reduce((acc, userStockVal, index) => {
-                return acc + userStockVal * masterStock[index];
-            }, 0);
+            if (userStock.length !== masterStock.length) {
+                console.warn(`Skipping ${teamId}: Stock length mismatch.`);
+                continue;
+            }
 
-            console.log(`Sum of the product for team ${teamId}:`, sum);
+            // Compute Σ(userStock[i] * masterStock[i])
+            let stockWorth = 0;
+            for (let i = 0; i < userStock.length; i++) {
+                stockWorth += userStock[i] * masterStock[i];
+            }
 
-            const total = sum + freeCoins;
+            const totalWorth = stockWorth + freeMoney;
 
-            // Step 6: Update the document in Supabase for each user
-            const { data: updatedData, error } = await supabase
+            updates.push({
+                Team_password: teamId,
+                total_worth: totalWorth
+            });
+        }
+
+        // ------------------------------------------
+        // 4) Batch update total_worth (Faster)
+        // ------------------------------------------
+        for (const entry of updates) {
+            const { error } = await supabase
                 .from('userdata')
-                .update({ total_worth: total })
-                .eq('Team_password', teamId)
-                .single();
+                .update({ total_worth: entry.total_worth })
+                .eq('Team_password', entry.Team_password);
 
             if (error) {
-                console.error(`Error updating data for team ${teamId}:`, error.message);
-                continue;
+                console.error(`Failed to update ${entry.Team_password}:`, error.message);
             }
-
-            console.log(`Successfully updated total_worth for team ${teamId}`);
         }
 
-        // Step 7: Fetch all teams sorted by total_worth in descending order
-        const { data: sortedTeams, error: sortedTeamsError } = await supabase
+        // ------------------------------------------
+        // 5) Fetch updated leaderboard sorted
+        // ------------------------------------------
+        const { data: sortedTeams, error: sortedError } = await supabase
             .from('userdata')
             .select('Team_name, Team_password, total_worth')
+            .neq('Team_password', 'MasterCoins') // exclude master
             .order('total_worth', { ascending: false });
 
-        if (sortedTeamsError) {
-            throw new Error(`Error fetching sorted teams: ${sortedTeamsError.message}`);
+        if (sortedError) {
+            return {
+                statusCode: 500,
+                body: JSON.stringify({ error: "Could not fetch leaderboard" })
+            };
         }
 
-        // Log the sorted teams and their total worth
-        console.log("Teams sorted by total worth (descending):", sortedTeams);
-
+        // Final response
         return {
             statusCode: 200,
             body: JSON.stringify({
-                message: "All documents updated successfully.",
-                sortedTeams: sortedTeams, // Include sorted teams in the response
-            }),
+                message: "Leaderboard updated successfully.",
+                leaderboard: sortedTeams
+            })
         };
-    } catch (error) {
-        console.error("Error:", error);
+
+    } catch (err) {
+        console.error("Leaderboard Error:", err);
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: "Internal Server Error" }),
+            body: JSON.stringify({ error: "Internal Server Error" })
         };
     }
 };
