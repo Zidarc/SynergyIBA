@@ -1,140 +1,152 @@
-# Synergy IBA - Coin Trading Dashboard
+# Synergy IBA — Coin Trading Dashboard
 
-A real-time simulated coin trading dashboard with a static frontend and Netlify serverless functions backed by Supabase.
+A real-time simulated coin trading dashboard consisting of a static frontend (HTML/CSS/JS), Netlify serverless functions, and Supabase (Postgres) as the backend. This README expands on setup, architecture, API, data model, deployment, and troubleshooting.
 
----
+## Table of contents
+- Project overview
+- Key features
+- Architecture & flow
+- Repository layout (important files)
+- Local setup (Windows)
+- Environment variables
+- Running & development
+- API endpoints (examples)
+- Supabase data model (schema)
+- Security & best practices
+- Deployment (Netlify)
+- Testing & maintenance
+- Troubleshooting
+- Contributing & license
 
-## Quick Links (Source Files & Entry Points)
+## Project overview
+This project simulates a trading environment where:
+- A MasterCoins row holds canonical coin prices and percent changes.
+- Teams (users) hold coin quantities and free money.
+- Serverless functions read/update Supabase and recalculate team worth and leaderboard.
 
-* **Netlify config:** [netlify.toml](netlify.toml)
-* **Frontend HTML:**
+## Key features
+- Dashboard showing master prices, percent change, and per-team holdings.
+- Buy/sell transactions via serverless endpoint.
+- Periodic MasterCoins updates that propagate to team valuations.
+- Leaderboard (total_worth) recalculation routine.
 
-  * [src/index.html](src/index.html)
-  * [src/user.html](src/user.html)
-  * [src/dummy.html](src/dummy.html)
-* **Frontend JS:**
+## Architecture & flow
+1. Frontend (static files in src/) fetches data from Netlify functions.
+2. Netlify functions (functions/*.js) use SUPABASE_URL and SUPABASE_KEY to read/write Supabase.
+3. Supabase stores MasterCoins and team rows in a `userdata` table.
+4. A separate function recalculates `total_worth` for leaderboard updates.
 
-  * [src/js/teamdata.js](src/js/teamdata.js) — `setTeamkey`, `getTeamkey`
-  * [src/js/login.js](src/js/login.js) — `signIn`
-  * [src/js/user.js](src/js/user.js) — `master`, `readdata`, `calculateBuyingPower`
-  * [src/js/dummy.js](src/js/dummy.js) — realtime demo
-* **Frontend CSS:**
+## Repository layout (most relevant files)
+- src/
+  - index.html, user.html, dummy.html
+  - js/
+    - teamdata.js (set/get team key)
+    - login.js (signIn)
+    - user.js (main UI logic: readdata, master price handling)
+    - dummy.js (demo/testing)
+  - css/
+    - index.css, user.css
+- functions/
+  - read.js — read team row
+  - update.js — handle buy/sell updates (uses Decimal.js)
+  - mainfunction.js — update MasterCoins / propagate changes
+  - totalworth.js — recalc and persist teams' total_worth
+- netlify.toml — Netlify settings
+- package.json — build scripts & deps
+- .gitignore
+- Readme.md — this file
 
-  * [src/css/index.css](src/css/index.css)
-  * [src/css/user.css](src/css/user.css)
-* **Serverless Functions (Netlify):**
+## Local setup (Windows)
+Prerequisites:
+- Node.js (16+ recommended)
+- npm
+- (Optional) Netlify CLI for local function testing: npm i -g netlify-cli
 
-  * [functions/read.js](functions/read.js) — `read.handler`
-  * [functions/update.js](functions/update.js) — `update.handler`
-  * [functions/mainfunction.js](functions/mainfunction.js) — `mainfunction.handler`
-  * [functions/totalworth.js](functions/totalworth.js) — `totalworth.handler`
-* **Project & Config:**
-
-  * [package.json](package.json)
-  * [.gitignore](.gitignore)
-
----
-
-## Project Overview
-
-* **Frontend Features:**
-
-  * Display Master coin prices, percent changes, and trends.
-  * Show per-team coin holdings and total worth.
-  * Login page stores team key in `localStorage` via `teamdata.js`.
-* **Serverless Function Features:**
-
-  * Read team data: `read.handler`
-  * Buy/sell transactions: `update.handler`
-  * Update MasterCoins stock and percent changes: `mainfunction.handler`
-  * Recalculate total worth / leaderboard: `totalworth.handler`
-
----
-
-## Local Setup
-
-1. Clone the repo:
-
-   ```bash
-   git clone <repo_url>
-   ```
-
+Steps:
+1. Clone repo:
+   - git clone <repo-url>
 2. Install dependencies:
+   - cd "c:\Users\Hp Probook\Desktop\SynergyIBA"
+   - npm install
+3. Create `.env` in repo root (ignored by git) with:
+   - SUPABASE_URL=<your-supabase-url>
+   - SUPABASE_KEY=<your-service-role-or-anon-key>
+4. Start frontend (Parcel):
+   - npx parcel src/user.html
+5. (Optional) Run Netlify dev to test functions locally:
+   - netlify dev
+   Netlify will pick up netlify.toml and functions/ directory.
 
-   ```bash
-   npm install
-   ```
+## Environment variables
+- SUPABASE_URL — your Supabase project URL
+- SUPABASE_KEY — service_role key (server-side functions) or anon key for client. Important: never expose service_role key in client-side code.
 
-3. Create a `.env` file at project root:
+Add these to:
+- Local `.env` for development (functions read process.env)
+- Netlify Dashboard > Site settings > Build & deploy > Environment > Environment variables for production
 
-   ```
-   SUPABASE_URL=<your_supabase_url>
-   SUPABASE_KEY=<your_service_or_anon_key>
-   ```
+## Running & development notes
+- Build command (from package.json): npm run build
+- For frontend live-reload: npx parcel src/user.html
+- For serverless function debugging: netlify dev
+- Browser localStorage is used to store team key (team auth is minimal).
 
-4. Build frontend with Parcel:
+## API endpoints (Netlify functions) — examples
+Endpoints accept GET query parameters as implemented in functions/*.js. Examples assume local netlify dev or deployed site.
 
-   ```bash
-   npm run build
-   ```
+1. Read team:
+   - GET /.netlify/functions/read?teamkey=TEAM_KEY
+   - cURL:
+     - curl "http://localhost:8888/.netlify/functions/read?teamkey=TEAMKEY123"
 
-5. Run locally:
+2. Update (buy/sell):
+   - GET /.netlify/functions/update?cointype=BTC&teamId=<id>&transactiontype=buy&coinval=10
+   - cURL:
+     - curl "http://localhost:8888/.netlify/functions/update?cointype=BTC&teamId=3&transactiontype=sell&coinval=5"
 
-   ```bash
-   npx parcel src/user.html
-   ```
+3. Master update / bulk:
+   - GET /.netlify/functions/mainfunction?changes=<json or encoded params>
+   - See functions/mainfunction.js for expected payload/format.
 
-> `.env` is ignored by Git. Netlify functions directory is configured in `netlify.toml`.
+4. Recalculate total worth:
+   - GET /.netlify/functions/totalworth
 
----
+Note: Endpoints and query parameter names are defined in the function files. Validate exact key names and accepted values there.
 
-## API Endpoints
+## Supabase data model (userdata table)
+Primary table: userdata
+- Team_password (text) — used as team key / login token
+- Team_name (text)
+- Stock (numeric[] or text JSON) — master prices (for MasterCoins) or holdings (for teams)
+- StockChange (numeric[] or text JSON) — percent changes array for MasterCoins
+- free_money (numeric) — team's cash balance
+- total_worth (numeric) — aggregated value of holdings + free_money
+- id (primary key)
+Notes:
+- The functions expect arrays for Stock and StockChange. Check the exact column types in your Supabase table (text JSON vs numeric[]). Adjust functions accordingly.
 
-* **Read team data:**
+## Security & best practices
+- Use service_role key only in server-side functions. Never embed it in frontend JS.
+- Validate and sanitize all inputs in functions/update.js to prevent invalid transactions.
 
-  ```
-  GET /.netlify/functions/read?teamkey=<TEAM_KEY>
-  ```
 
-* **Buy/Sell transactions:**
+## Deployment (Netlify)
+1. Create a Netlify site connected to this repo.
+2. In Netlify UI, set environment variables SUPABASE_URL and SUPABASE_KEY.
+3. Build command: npm run build
+4. Publish directory: dist (or as configured by your bundler)
+5. Verify functions deployed (Netlify Functions tab) and test endpoints.
 
-  ```
-  GET /.netlify/functions/update?cointype=<COIN>&teamId=<TEAM>&transactiontype=<buy|sell>&coinval=<VALUE>
-  ```
+## Testing & maintenance
+- Add unit tests for financial arithmetic (use Decimal.js where precision matters).
 
-* **MasterCoins update:**
-  See `mainfunction.handler`
+## Troubleshooting
+- 401/403 from Supabase: ensure SUPABASE_KEY is valid for the attempted operation.
+- Function errors: check Netlify function logs or netlify dev output in terminal.
+- Incorrect arrays: verify Stock and StockChange values types stored in Supabase.
 
-* **Leaderboard / total worth update:**
-  See `totalworth.handler`
+## Contributing
+- Fork -> branch -> PR
+- Document schema changes and update this README.
+- Keep server keys out of commits.
 
----
-
-## Data Model (Supabase/Postgres)
-
-Table: `userdata`
-
-* `Team_password` (key for fetching row)
-* `Team_name`
-* `Stock` (array of numbers)
-* `StockChange` (array of percent changes)
-* `free_money` (number)
-* `total_worth` (number)
-
-> Functions read/write these fields using Supabase client (`@supabase/supabase-js`).
-
----
-
-## Security & Deployment
-
-* Use service role key for server-side functions. Avoid exposing in frontend.
-* Frontend uses public anon key for read-only operations.
-* Netlify builds and deploys using `netlify.toml`. Ensure environment variables are set in Netlify UI.
-
----
-
-## Maintenance & Extensions
-
-* Add unit tests for buy/sell boundaries (Decimal.js logic).
-* Add input validation and CSRF protections for public endpoints.
-* Centralize frontend error handling for better UX.
