@@ -38,8 +38,7 @@ exports.handler = async (event, context) => {
         const { data: UserData, error: userError } = await supabase
             .from('userdata')
             .select('Stock, free_money')
-            .eq('Team_password', teamId)
-            .single();
+            .eq('Team_password', teamId);
 
         if (userError) {
             return {
@@ -53,8 +52,7 @@ exports.handler = async (event, context) => {
         const { data: masterData, error: masterError } = await supabase
             .from('userdata')
             .select('Stock')
-            .eq('Team_password', 'MasterCoins')
-            .single();
+            .eq('Team_password', 'MasterCoins');
 
         if (masterError) {
             return {
@@ -77,8 +75,7 @@ exports.handler = async (event, context) => {
                         Stock: updatedStock,
                         free_money: updatedBalance.toNumber(),
                     })
-                    .eq('Team_password', teamId)
-                    .single();
+                    .eq('Team_password', teamId);
 
                 if (updateError) {
                     return {
@@ -96,16 +93,15 @@ exports.handler = async (event, context) => {
             if (coinVal.lte(userCoinVal)) {
                 const increment = freeCoins.plus(coinVal.mul(serverCoinVal));
                 const updatedStock = [...UserData.Stock];
-                updatedStock[index] = userCoinVal.minus(coinVal).toNumber(); // Convert to float8-compatible value
+                updatedStock[index] = userCoinVal.minus(coinVal).toNumber(); 
 
                 const { data: updatedData, error: updateError } = await supabase
                     .from('userdata')
                     .update({
                         Stock: updatedStock,
-                        free_money: increment.toNumber(), // Convert to native number
+                        free_money: increment.toNumber(), 
                     })
-                    .eq('Team_password', teamId)
-                    .single();
+                    .eq('Team_password', teamId);
 
                 if (updateError) {
                     return {
