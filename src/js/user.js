@@ -92,7 +92,7 @@ async function readdata() {
 supabaseClient
   .channel('userdata')
   .on('postgres_changes', 
-    { event: 'UPDATE', schema: 'public', table: 'userdata', filter: 'Team_password=eq.MC' }, 
+    { event: 'UPDATE', schema: 'public', table: 'userdata', filter: 'Team_password=eq.MasterCoins' }, 
     (payload) => {
         console.log('Change received!', payload);
         master(); 
