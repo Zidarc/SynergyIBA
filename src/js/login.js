@@ -1,48 +1,60 @@
 import { setTeamkey } from "./teamdata.js";
+
+// Set team key after login
 function setTeamIdAfterLogin(key) {
     setTeamkey(key);
 }
 
-window.addEventListener('pageshow', function(event) {
+// Clear input fields on page reload or back navigation
+window.addEventListener('pageshow', (event) => {
     if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
         setTeamIdAfterLogin("");
         document.getElementById('teamName').value = "";
         document.getElementById('password').value = "";
     }
 });
+
+// Sign-in function
 async function signIn() {
-    const Uteamname = document.getElementById('teamName').value;
-    const Upassword = document.getElementById('password').value;
-    setTeamIdAfterLogin(Upassword);
-    if (!Uteamname || !Upassword) {
-        document.getElementById('errorbox').innerText = "Please enter the values in.";
-    } else {
-        try {
-            const response = await fetch(`https://synergy-iba.netlify.app/.netlify/functions/read?teamkey=${Upassword}`);
-            if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
-            }
+    const teamName = document.getElementById('teamName').value.trim();
+    const password = document.getElementById('password').value.trim();
 
-            const data = await response.json();
+    setTeamIdAfterLogin(password);
 
-            if (data.error) {
-                document.getElementById("status").innerText = `Error: ${data.error}`;
-            } else {
-                const Spassword = data.Team_password;
+    const errorBox = document.getElementById('errorbox');
+    errorBox.innerText = "";
 
-                if (Spassword === Upassword) {
-                    // Redirect to index.js or another page on the server side
-                    window.location.href = '/user.html';
+    if (!teamName || !password) {
+        errorBox.innerText = "Please enter both Team Name and Password.";
+        return;
+    }
 
+    try {
+        const response = await fetch(`https://synergy-iba.netlify.app/.netlify/functions/read?teamkey=${password}`);
 
-                } else {
-                    document.getElementById('errorbox').innerText = "Password Wrong";
-                }
-            }
-        } catch (error) {
-            document.getElementById('errorbox').innerText = "An error occurred during sign-in.";
+        if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
         }
+
+        const data = await response.json();
+
+        if (data.error) {
+            errorBox.innerText = `Error: ${data.error}`;
+            return;
+        }
+
+        if (data.Team_password === password) {
+            // Successful login: redirect to user page
+            window.location.href = '/user.html';
+        } else {
+            errorBox.innerText = "Incorrect password.";
+        }
+
+    } catch (err) {
+        console.error("Sign-in error:", err);
+        errorBox.innerText = "An error occurred during sign-in. Please try again.";
     }
 }
 
+// Expose function globally for button onclick
 window.signIn = signIn;

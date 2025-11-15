@@ -1,11 +1,14 @@
 require('dotenv').config();
-const { createClient } = require('@supabase/supabase-js'); 
+const { createClient } = require('@supabase/supabase-js');
 
 const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
 
 exports.handler = async (event, context) => {
     try {
-        const teamkey = event.queryStringParameters && event.queryStringParameters.teamkey;
+        // ------------------------------------------
+        // 1) Extract teamkey from query parameters
+        // ------------------------------------------
+        const teamkey = event.queryStringParameters?.teamkey;
         console.log("Received teamkey:", teamkey);
 
         if (!teamkey) {
@@ -15,8 +18,9 @@ exports.handler = async (event, context) => {
             };
         }
 
-        console.log("Executing query with teamkey:", teamkey);
-
+        // ------------------------------------------
+        // 2) Query Supabase for the given team
+        // ------------------------------------------
         const { data, error } = await supabase
             .from('userdata')
             .select('*')
@@ -27,7 +31,7 @@ exports.handler = async (event, context) => {
             console.error("Error querying Supabase:", error);
             return {
                 statusCode: 500,
-                body: JSON.stringify({ error: "Failed to query Supabase" }),
+                body: JSON.stringify({ error: "Failed to query Supabase", details: error.message }),
             };
         }
 
@@ -38,15 +42,19 @@ exports.handler = async (event, context) => {
             };
         }
 
+        // ------------------------------------------
+        // 3) Return the team data as JSON
+        // ------------------------------------------
         return {
             statusCode: 200,
             body: JSON.stringify(data),
         };
-    } catch (error) {
-        console.error("Error details:", error);
+
+    } catch (err) {
+        console.error("Unexpected error in handler:", err);
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: "Internal Server Error", details: error.message }),
+            body: JSON.stringify({ error: "Internal Server Error", details: err.message }),
         };
     }
 };
