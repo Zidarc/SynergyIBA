@@ -32,7 +32,8 @@ async function signIn() {
 
                 if (Spassword === Upassword) {
                     // Redirect to index.js or another page on the server side
-                    window.location.href = '/user.html';
+                    window.location.href = '/src/user.html';
+
                 } else {
                     document.getElementById('errorbox').innerText = "Password Wrong";
                 }
