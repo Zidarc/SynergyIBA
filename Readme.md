@@ -5,6 +5,7 @@ A real-time simulated coin trading dashboard consisting of a static frontend (HT
 ## Table of contents
 - Project overview
 - Key features
+- Online Links
 - Architecture & flow
 - Repository layout (important files)
 - Local setup (Windows)
@@ -16,7 +17,6 @@ A real-time simulated coin trading dashboard consisting of a static frontend (HT
 - Deployment (Netlify)
 - Testing & maintenance
 - Troubleshooting
-- Contributing & license
 
 ## Project overview
 This project simulates a trading environment where:
@@ -29,6 +29,20 @@ This project simulates a trading environment where:
 - Buy/sell transactions via serverless endpoint.
 - Periodic MasterCoins updates that propagate to team valuations.
 - Leaderboard (total_worth) recalculation routine.
+
+## Online Links
+
+## User Trading Panel
+https://synergy-iba.netlify.app/
+
+**Credentials**
+- Team Name: `TestUsers`
+- Password: `TestUser`
+You can trade here and check realtime updates.
+
+## Admin Update Panel
+https://adminpagesynergy.netlify.app/
+Enter test values here to trigger realtime stock updates visible on the user panel.
 
 ## Architecture & flow
 1. Frontend (static files in src/) fetches data from Netlify functions.
@@ -72,14 +86,14 @@ Steps:
    - SUPABASE_URL=<your-supabase-url>
    - SUPABASE_KEY=<your-service-role-or-anon-key>
 4. Start frontend (Parcel):
-   - npx parcel src/user.html
+   - npx parcel build src/*.html --no-scope-hoist
 5. (Optional) Run Netlify dev to test functions locally:
    - netlify dev
    Netlify will pick up netlify.toml and functions/ directory.
 
 ## Environment variables
 - SUPABASE_URL — your Supabase project URL
-- SUPABASE_KEY — service_role key (server-side functions) or anon key for client. Important: never expose service_role key in client-side code.
+- SUPABASE_KEY — service_role key (server-side functions) or anon key for client
 
 Add these to:
 - Local `.env` for development (functions read process.env)
