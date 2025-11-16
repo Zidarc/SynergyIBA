@@ -80,7 +80,6 @@ Steps:
 1. Clone repo:
    - git clone <repo-url>
 2. Install dependencies:
-   - cd "c:\Users\Hp Probook\Desktop\SynergyIBA"
    - npm install
 3. Create `.env` in repo root (ignored by git) with:
    - SUPABASE_URL=<your-supabase-url>
